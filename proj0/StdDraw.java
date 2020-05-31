@@ -101,7 +101,7 @@ import javax.swing.KeyStroke;
  *  If you compile and execute the program, you should see a window
  *  appear with a thick magenta line and a blue point.
  *  This program illustrates the two main types of methods in standard
- *  drawingâ€”methods that draw geometric shapes and methods that
+ *  drawing¡ªmethods that draw geometric shapes and methods that
  *  control drawing parameters.
  *  The methods {@code StdDraw.line()} and {@code StdDraw.point()}
  *  draw lines and points; the methods {@code StdDraw.setPenRadius()}
@@ -296,7 +296,7 @@ import javax.swing.KeyStroke;
  *  or rescale it to fit snugly inside a width-by-height bounding box.
  *  <p>
  *  <b>Saving to a file.</b>
- *  You save your image to a file using the <em>File â†’ Save</em> menu option.
+ *  You save your image to a file using the <em>File ¡ú Save</em> menu option.
  *  You can also save a file programatically using the following method:
  *  <ul>
  *  <li> {@link #save(String filename)}
@@ -332,7 +332,7 @@ import javax.swing.KeyStroke;
  *  <p>
  *  By default, double buffering is disabled, which means that as soon as you
  *  call a drawing
- *  methodâ€”such as {@code point()} or {@code line()}â€”the
+ *  method¡ªsuch as {@code point()} or {@code line()}¡ªthe
  *  results appear on the screen.
  *  <p>
  *  When double buffering is enabled by calling {@link #enableDoubleBuffering()},
@@ -422,7 +422,7 @@ import javax.swing.KeyStroke;
  *  <li> Any method that is passed a {@code null} argument will throw an
  *       {@link IllegalArgumentException}.
  *  <li> Except as noted in the APIs, drawing an object outside (or partly outside)
- *       the canvas is permittedâ€”however, only the part of the object that
+ *       the canvas is permitted¡ªhowever, only the part of the object that
  *       appears inside the canvas will be visible.
  *  <li> Except as noted in the APIs, all methods accept {@link Double#NaN},
  *       {@link Double#POSITIVE_INFINITY}, and {@link Double#NEGATIVE_INFINITY}
@@ -430,7 +430,7 @@ import javax.swing.KeyStroke;
  *       that is NaN will behave as if it is outside the canvas, and will not be visible.
  *  <li> Due to floating-point issues, an object drawn with an <em>x</em>- or
  *       <em>y</em>-coordinate that is way outside the canvas (such as the line segment
- *       from (0.5, â€“&infin;) to (0.5, &infin;) may not be visible even in the
+ *       from (0.5, ¨C&infin;) to (0.5, &infin;) may not be visible even in the
  *       part of the canvas where it should be.
  *  </ul>
  *  <p>
@@ -1187,7 +1187,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
      * Draws a polygon with the vertices 
      * (<em>x</em><sub>0</sub>, <em>y</em><sub>0</sub>),
      * (<em>x</em><sub>1</sub>, <em>y</em><sub>1</sub>), ...,
-     * (<em>x</em><sub><em>n</em>â€“1</sub>, <em>y</em><sub><em>n</em>â€“1</sub>).
+     * (<em>x</em><sub><em>n</em>¨C1</sub>, <em>y</em><sub><em>n</em>¨C1</sub>).
      *
      * @param  x an array of all the <em>x</em>-coordinates of the polygon
      * @param  y an array of all the <em>y</em>-coordinates of the polygon
@@ -1216,7 +1216,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
      * Draws a polygon with the vertices 
      * (<em>x</em><sub>0</sub>, <em>y</em><sub>0</sub>),
      * (<em>x</em><sub>1</sub>, <em>y</em><sub>1</sub>), ...,
-     * (<em>x</em><sub><em>n</em>â€“1</sub>, <em>y</em><sub><em>n</em>â€“1</sub>).
+     * (<em>x</em><sub><em>n</em>¨C1</sub>, <em>y</em><sub><em>n</em>¨C1</sub>).
      *
      * @param  x an array of all the <em>x</em>-coordinates of the polygon
      * @param  y an array of all the <em>y</em>-coordinates of the polygon
