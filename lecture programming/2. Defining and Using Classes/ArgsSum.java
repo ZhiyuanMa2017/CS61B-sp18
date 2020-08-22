@@ -3,7 +3,7 @@ public class ArgsSum{
 		int N = args.length;
 		int i = 0;
 		int sum = 0;
-		while (i<N){
+		while (i < N){
 			sum = sum + Integer.parseInt(args[i]);
 			i = i + 1;
 		}
