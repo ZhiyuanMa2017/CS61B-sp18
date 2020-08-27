@@ -27,7 +27,7 @@ public class SquaringList{
 		IntList QQ = new IntList(L.first*L.first, null);
 		IntList QQQ = QQ;
 		while(Q != null){
-			QQQ.rest = new IntList(Qfirst*Q.first,null);
+			QQQ.rest = new IntList(Q.first*Q.first,null);
 			Q = Q.rest;
 			QQQ = QQQ.rest;
 		}
