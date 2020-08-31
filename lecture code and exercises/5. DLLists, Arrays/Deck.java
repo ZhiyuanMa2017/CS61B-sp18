@@ -1,4 +1,4 @@
- /** B Level exercise*/
+ /** B Level exercise */
  public class Deck{
      public static int[] cards;
      Deck(){
