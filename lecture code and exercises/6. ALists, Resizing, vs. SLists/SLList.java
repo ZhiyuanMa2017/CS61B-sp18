@@ -1,3 +1,8 @@
+/**
+problem: https://sp18.datastructur.es/materials/discussion/disc03.pdf
+solution: https://sp18.datastructur.es/materials/discussion/disc03sol.pdf
+*/
+
 public class SLList{
 	private static class IntNode {
 		public int item;
@@ -14,13 +19,17 @@ public class SLList{
 		first = new IntNode(x, first);
 	}
 
+	public SLList(int x){
+		first = new IntNode(x, null);
+	}
+
 	public void insert(int item, int position) {
 		if(first == null || position == 0) {
 			addFirst(item);
-			return
+			return;
 		}
 		IntNode p = first;
-		while(position > 1 && p.first != null){
+		while(position > 1 && p.next != null){
 			position = position - 1;
 			p = p.next;
 		}
@@ -32,11 +41,33 @@ public class SLList{
 		IntNode prev = null;
 		IntNode p = first;
 		while(p != null) {
-			IntNode q = p.next;//保存后面的
-			p.next = prev;//reverse 这个节点的下一个是上一个节点
-			prev = p;//迭代 上一个节点变成下一个节点进入下个循环
-			p = q;//迭代 换成下一个节点进入下个循环
+			IntNode q = p.next;//???????
+			p.next = prev;//reverse ????ڵ??һ????һ???ڵ?
+			prev = p;//???? ?һ???ڵ????????ڵ?????ѭ??
+			p = q;//???? ?????????ڵ?????ѭ??
 		}
-		first = prev;//最后剩个prev作为第一个节点 p此时为Null
+		first = prev;//??????prev?Ϊ??????ڵ?p???ΪNull
+	}
+
+	public void reverseRecursive() {
+		first = reverseRecursiveHelper(first);
+	}
+
+	private IntNode reverseRecursiveHelper(IntNode x) {
+		if(x == null || x.next == null) {
+			return x;
+		} else {
+			IntNode reversed = reverseRecursiveHelper(x.next);
+			x.next.next = x;
+			x.next = null;
+			return reversed;
+		}
+	}
+	public static void main(String[] args) {
+		SLList p = new SLList(1);
+		p.addFirst(2);
+		p.addFirst(3);
+		p.addFirst(4);
+		p.reverseRecursive();
 	}
 }
