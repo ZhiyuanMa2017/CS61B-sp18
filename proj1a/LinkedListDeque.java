@@ -103,7 +103,7 @@ public class LinkedListDeque<T> {
         }
         return getRecursiveHelper(sentinel.next, index);
     }
-    public T getRecursiveHelper(StuffNode s, int i) {
+    private T getRecursiveHelper(StuffNode s, int i) {
         if (i == 0) {
             return s.item;
         } else {
@@ -111,21 +111,21 @@ public class LinkedListDeque<T> {
         }
     }
 
-    public static void main(String[] args) {
-        LinkedListDeque<Integer> test = new LinkedListDeque<>();
-        test.addFirst(20);
-        test.addLast(30);
-        test.addLast(40);
-        test.addLast(50);
-        test.addLast(60);
-        test.addFirst(10);
-        test.printDeque();
-        test.removeFirst();
-        test.removeLast();
-        int b = test.getRecursive(3);
-        int c = test.getRecursive(2);
-        int d = test.getRecursive(1);
-        int e = test.getRecursive(0);
-        System.out.print(b + " " + c + " " + d + " " + e);
-    }
+//    public static void main(String[] args) {
+//        LinkedListDeque<Integer> test = new LinkedListDeque<>();
+//        test.addFirst(20);
+//        test.addLast(30);
+//        test.addLast(40);
+//        test.addLast(50);
+//        test.addLast(60);
+//        test.addFirst(10);
+//        test.printDeque();
+//        test.removeFirst();
+//        test.removeLast();
+//        int b = test.getRecursive(3);
+//        int c = test.getRecursive(2);
+//        int d = test.getRecursive(1);
+//        int e = test.getRecursive(0);
+//        System.out.print(b + " " + c + " " + d + " " + e);
+//    }
 }

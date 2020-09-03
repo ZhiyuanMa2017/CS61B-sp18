@@ -104,6 +104,7 @@ public class ArrayDeque<T> {
             T lastvalue = items[(nextLast - 1 + items.length) % items.length];
             items[(nextLast - 1 + items.length) % items.length] = null;
             size = size - 1;
+            nextLast = (nextLast - 1 + items.length) % items.length;
             if (items.length >= 16 && (double) size / items.length < 0.25) {
                 resize(items.length / 2);
             }
@@ -119,28 +120,28 @@ public class ArrayDeque<T> {
         }
     }
 
-    public static void main(String[] args) {
-        ArrayDeque<Integer> test = new ArrayDeque<>();
-        test.addFirst(1);
-        test.addLast(2);
-        test.addFirst(0);
-        test.addLast(3);
-        test.addLast(4);
-        test.addLast(5);
-        test.addLast(6);
-        test.addLast(7);
-        test.printDeque();
-        test.addLast(8);
-        test.removeFirst();
-        test.removeFirst();
-        test.printDeque();
-        test.removeLast();
-        test.removeFirst();
-        test.printDeque();
-        System.out.print(test.get(2));
-        test.removeFirst();
-        test.removeLast();
-        System.out.print(test.get(2));
-
-    }
+//    public static void main(String[] args) {
+//        ArrayDeque<Integer> test = new ArrayDeque<>();
+//        test.addFirst(1);
+//        test.addLast(2);
+//        test.addFirst(0);
+//        test.addLast(3);
+//        test.addLast(4);
+//        test.addLast(5);
+//        test.addLast(6);
+//        test.addLast(7);
+//        test.printDeque();
+//        test.addLast(8);
+//        test.removeFirst();
+//        test.removeFirst();
+//        test.printDeque();
+//        test.removeLast();
+//        test.removeFirst();
+//        test.printDeque();
+//        System.out.print(test.get(2));
+//        test.removeFirst();
+//        test.removeLast();
+//        System.out.print(test.get(2));
+//
+//    }
 }
