@@ -11,21 +11,20 @@ public class ArrayDeque<T> {
         nextLast = 1;
     }
 
-    public void resize(int capacity) {
+    private void resize(int capacity) {
         T[] tmp = (T[]) new Object[capacity];
-        System.arraycopy(items, 0, tmp, 0, nextLast);
         if (capacity > items.length) {
             if (nextFirst + 1 < nextLast) {
                 System.arraycopy(items, 0, tmp, 0, size);
                 nextFirst = -1;
-                nextLast = size - 1;
+                nextLast = size;
                 //  [a][b][c][d] --> [a][b][c][d][][][][]
                 // F            L   F            L
             } else {
                 System.arraycopy(items, nextFirst + 1, tmp, 0, size - nextLast);
                 System.arraycopy(items, 0, tmp, size - nextLast, nextLast);
                 nextFirst = -1;
-                nextLast = size - 1;
+                nextLast = size;
                 // change order so that ArrayDeque[i] is lodated at items[i]
                 // [d][a][b][c] --> [a][b][c][d][][][][]
                 //  F  L           F            L
@@ -34,14 +33,14 @@ public class ArrayDeque<T> {
             if (nextFirst < nextLast) {
                 System.arraycopy(items, nextFirst + 1, tmp, 0, size);
                 nextFirst = -1;
-                nextLast = size - 1;
+                nextLast = size;
                 // [][][a][b][c][][][] --> [a][b][c][]
                 //    F         L         F         L
             } else {
                 System.arraycopy(items, nextFirst + 1, tmp, 0, items.length - nextFirst - 1);
                 System.arraycopy(items, 0, tmp, items.length - nextFirst - 1, nextLast);
                 nextFirst = -1;
-                nextLast = size - 1;
+                nextLast = size;
                 // [c][][][][][][a][b] --> [a][b][c][]
                 //    L        F          F         L
             }
@@ -90,6 +89,7 @@ public class ArrayDeque<T> {
             T firstvalue = items[(nextFirst + 1) % items.length];
             items[(nextFirst + 1) % items.length] = null;
             size = size - 1;
+            nextFirst = (nextFirst + 1) % items.length;
             if (items.length >= 16 && (double) size / items.length < 0.25) {
                 resize(items.length / 2);
             }
@@ -117,5 +117,30 @@ public class ArrayDeque<T> {
         } else {
             return items[(nextFirst + 1 + index) % items.length];
         }
+    }
+
+    public static void main(String[] args) {
+        ArrayDeque<Integer> test = new ArrayDeque<>();
+        test.addFirst(1);
+        test.addLast(2);
+        test.addFirst(0);
+        test.addLast(3);
+        test.addLast(4);
+        test.addLast(5);
+        test.addLast(6);
+        test.addLast(7);
+        test.printDeque();
+        test.addLast(8);
+        test.removeFirst();
+        test.removeFirst();
+        test.printDeque();
+        test.removeLast();
+        test.removeFirst();
+        test.printDeque();
+        System.out.print(test.get(2));
+        test.removeFirst();
+        test.removeLast();
+        System.out.print(test.get(2));
+
     }
 }
