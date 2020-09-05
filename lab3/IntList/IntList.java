@@ -11,11 +11,11 @@ public class IntList {
     /**
      * First element of list.
      */
-    public int first;
+    private int first;
     /**
      * Remaining elements of list.
      */
-    public IntList rest;
+    private IntList rest;
 
     /**
      * A List with first FIRST0 and rest REST0.
@@ -246,15 +246,15 @@ public class IntList {
         return out.toString();
     }
 
-    public static IntList reverse(IntList A){
-        if (A == null){
+    public static IntList reverse(IntList A) {
+        if (A == null) {
             return null;
         }
         IntList prev = null;
         IntList p = A;
         while (p != null) {
             IntList q = p.rest;
-            prev = new IntList(p.first, prev);// never change p.rest!!! It will change A!!!
+            prev = new IntList(p.first, prev); // never change p.rest!!! It will change A!!!
             p = q;
         }
         return prev;
