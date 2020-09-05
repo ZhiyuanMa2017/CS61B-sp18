@@ -247,6 +247,20 @@ public class IntList {
     }
 
     public static IntList reverse(IntList A) {
+        /** Non-destructively reverse method */
+//        if (A == null) {
+//            return null;
+//        }
+//        IntList prev = null;
+//        IntList p = A;
+//        while (p != null) {
+//            IntList q = p.rest;
+//            prev = new IntList(p.first, prev); // never change p.rest!!! It will change A!!!
+//            p = q;
+//        }
+//        return prev;
+
+        /** Destructively reverse method */
         if (A == null) {
             return null;
         }
@@ -254,10 +268,12 @@ public class IntList {
         IntList p = A;
         while (p != null) {
             IntList q = p.rest;
-            prev = new IntList(p.first, prev); // never change p.rest!!! It will change A!!!
+            p.rest = prev;
+            prev = p;
             p = q;
         }
         return prev;
+
     }
 }
 
