@@ -246,6 +246,10 @@ public class IntList {
         return out.toString();
     }
 
+    /**
+     * can get help from:
+     * https://inst.eecs.berkeley.edu/~cs61b/fa18/materials/disc/discussion2sol.pdf
+     * */
     public static IntList reverse(IntList A) {
         /** Non-destructively reverse method */
 //        if (A == null) {
