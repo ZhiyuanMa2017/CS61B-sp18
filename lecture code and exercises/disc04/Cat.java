@@ -1,7 +1,7 @@
 public class Cat extends Animal {
     public Cat(String name, int age) {
         super(name, age);
-        this.noise = "Meow";
+        this.noise = "Meow!";
     }
 
     @Override
