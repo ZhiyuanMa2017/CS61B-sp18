@@ -9,16 +9,16 @@ public class Palindrome {
     }
 
     public boolean isPalindrome(String word) {
-        Deque worddeque = wordToDeque(word);
+        Deque<Character> worddeque = wordToDeque(word);
         if (worddeque.size() == 0) {
             return true;
-        } else{
+        } else {
             while (!worddeque.isEmpty()) {
                 if (worddeque.size() == 1) {
                     return true;
                 }
-                Character first = (Character) worddeque.removeFirst();
-                Character last = (Character) worddeque.removeLast();
+                Character first = worddeque.removeFirst();
+                Character last =  worddeque.removeLast();
                 if (!first.equals(last)) {
                     return false;
                 }
@@ -28,16 +28,16 @@ public class Palindrome {
     }
 
     public boolean isPalindrome(String word, CharacterComparator cc) {
-        Deque worddeque = wordToDeque(word);
+        Deque<Character> worddeque = wordToDeque(word);
         if (worddeque.size() == 0) {
             return true;
-        } else{
+        } else {
             while (!worddeque.isEmpty()) {
                 if (worddeque.size() == 1) {
                     return true;
                 }
-                char first = (char) worddeque.removeFirst();
-                char last = (char) worddeque.removeLast();
+                char first =  worddeque.removeFirst();
+                char last =  worddeque.removeLast();
                 if (!cc.equalChars(first, last)) {
                     return false;
                 }
