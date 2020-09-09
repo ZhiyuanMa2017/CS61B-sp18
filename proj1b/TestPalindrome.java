@@ -20,9 +20,14 @@ public class TestPalindrome {
     public void testisPalindrome() {
         assertTrue(palindrome.isPalindrome("a"));
         assertTrue(palindrome.isPalindrome(""));
-        boolean i = palindrome.isPalindrome("noon");
         assertTrue(palindrome.isPalindrome("noon"));
         assertFalse(palindrome.isPalindrome("horse"));
         assertFalse(palindrome.isPalindrome("aaaaab"));
+
+        CharacterComparator offByOne = new OffByOne();
+        assertTrue(palindrome.isPalindrome("flake", offByOne));
+        assertTrue(palindrome.isPalindrome("", offByOne));
+        assertTrue(palindrome.isPalindrome("a", offByOne));
+        assertFalse(palindrome.isPalindrome("noon", offByOne));
     }
 }
