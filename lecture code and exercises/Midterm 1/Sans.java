@@ -1,82 +1,42 @@
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 public class Sans {
-    public static class IntList {
-        public int first;
-        public IntList rest;
-        public IntList(int f, IntList r) {
-            first = f;
-            rest = r;
-        }
-        public IntList() {}
-        public static IntList of(Integer... args) { /* works correctly */
-            return null;
-        }
-        public boolean equals(Object x) { /*works correctly with assertEquals*/
-            return false;
-        }
-    }
 
+    /** Non-destructively creates a copy of x that contains no y. */
     public static int[] sans(int[] x, int y) {
         int[] xclean = new int[x.length];
         int c = 0;
         for (int i = 0; i < x.length; i += 1) {
-            if (_____________________________________) {
-                __________________________________________________
-                        __________________________________________________;
+            if (x[i] != y) {
+                xclean[c] = x[i];
+                c = c + 1;
             }
         }
-        int[] r = ________________________________________________;
-        System.arraycopy(_________________________________________);
-        return r; // arraycopy parameters are:
-    }
-    // srcArr, srcStartIdx, destArr, destStartIdx, numToCopy
-    // where src->source, dest->destination, Idx->index
+        int[] r = new int[c];
+        System.arraycopy(xclean, 0, r, 0, c);
+        return r; // arraycopy parameters are: srcArr, srcStartIdx, destArr, destStartIdx, numToCopy
+    } // where src->source, dest->destination, Idx->index
 
+    /** Non-destructively creates a copy of x that contains no y. */
     public static IntList ilsans(IntList x, int y) {
-        if (___________________________________________________) {
-            return _________________________________________;
+        if (x == null) {
+            return null;
         }
-        if (______________________________________________) {
-            return __________________________________________________;
-        }
-        return new _____________________________________________;
-    }
-
-    public static IntList dilsans(IntList x, int y) {
-        if (___________________________________________________) {
-            ________________________________________________________________;
-        }
-        ________________________________________________________________;
         if (x.first == y) {
-            return _______________________________________;
+            return ilsans(x.rest, y);
         }
-        return ___________________________________________;
+        return new IntList(x.first, ilsans(x.rest, y));
     }
 
-
-    public class TestSans {
-        @Test
-        public void testSans() { // TEST THE ARRAY VERSION OF SANS
-            int[] x = ______________________________________________________;
-            int y = ________________________________________________________;
-            int[] expected = _______________________________________________;
-            int[] actual = _________________________________________________;
-            ________________________________________________________________
-                    ________________________________________________________________;
+    /** Destructively creates a copy of x that contains no y. You may
+     not use new. */
+    public static IntList dilsans(IntList x, int y) {
+        if (x == null) {
+            return null;
         }
-
-        @Test // TEST THE NON-DESTRUCTIVE INTLIST VERSION OF SANS
-        public void testIlsans() {
-            IntList x = IntList.of(_________________________________________);
-            int y = ________________________________________________________;
-            IntList expected = IntList.of(__________________________________ );
-            IntList actual = _______________________________________________;
-                    ________________________________________________________________
-                    ________________________________________________________________;
-                    ________________________________________________________________;
+        x.rest = dilsans(x.rest, y);
+        if (x.first == y) {
+            return x.rest;
         }
+        return x;
     }
 
 }

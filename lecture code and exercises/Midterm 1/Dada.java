@@ -32,7 +32,7 @@ public class Dada {
     }
     private static void fillOne(String d) {
         d = Dada.rs[0];
-    }
+    }// a local variable assigment!!!
     public static void main(String[] args) {
         String a = "alice";
         String b = "bob";
@@ -42,7 +42,7 @@ public class Dada {
         Dada.rs = new String[]{"fritz", "gritz"};
         String[] X = twod[0];
         printStringArray(X); // alice bob
-        fillOne(X[0]);// X[0] = Dada.rs[0] x={fritz, bob}
+        fillOne(X[0]); // X[0] = Dada.rs[0] x={fritz, bob}
         printStringArray(X); // fritz bob WRONG!!! the correct answer is alice bob
         fillMany(X);
         printStringArray(X); // fritz gritz
