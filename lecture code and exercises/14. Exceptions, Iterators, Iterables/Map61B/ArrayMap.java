@@ -33,19 +33,19 @@ public class ArrayMap<K, V> implements Map61B<K, V>, Iterable<K> {
     }
 
     private class KeyIterator implements Iterator<K> {
-        private int  wizeadPosition;
+        private int  wizardPosition;
 
         public KeyIterator() {
-            wizeadPosition = 0;
+            wizardPosition = 0;
         }
 
         public boolean hasNext() {
-            return wizeadPosition < size;
+            return wizardPosition < size;
         }
 
         public K next() {
-            K returnVal = keys[wizeadPosition];
-            wizeadPosition += 1;
+            K returnVal = keys[wizardPosition];
+            wizardPosition += 1;
             return returnVal;
         }
     }
