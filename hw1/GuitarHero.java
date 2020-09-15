@@ -11,7 +11,7 @@ public class GuitarHero {
         String keyboard = "q2we4r5ty7u8i9op-[=zxdcfvgbnjmk,.;/' ";
         GuitarString[] strings = new GuitarString[37];
         for (int i = 0; i < 37; i++) {
-            double frequency = CONCERT_A *  Math.pow(2, (i-24)/12);
+            double frequency = CONCERT_A *  Math.pow(2, (i - 24) / 12);
             strings[i] = new GuitarString(frequency);
         }
 
@@ -21,7 +21,7 @@ public class GuitarHero {
             if (StdDraw.hasNextKeyTyped()) {
                 char key = StdDraw.nextKeyTyped();
                 int index = keyboard.indexOf(key);
-                if(index == -1) {
+                if (index == -1) {
                     continue;
                 }
                 strings[index].pluck();
