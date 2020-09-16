@@ -38,12 +38,13 @@ public class KthIntList implements Iterator<Integer> {
             throw new NoSuchElementException();
         }
         Integer returnVal = curList.first;
-        for (int i = 0; i < k; i = i + 1) {
-            if (curList.rest != null) {
-                curList = curList.rest;
+        for (int i = 0; i < k ; i = i + 1) {
+            if (curList == null){
+                continue;
             }
+            curList = curList.rest;
         }
-        hasNext = (curList.rest != null);
+        hasNext = (curList != null);
         return returnVal;
     }
 
@@ -53,8 +54,9 @@ public class KthIntList implements Iterator<Integer> {
                         new IntList(2,
                                 new IntList(3,
                                         new IntList(4,
-                                                new IntList(5,null))))));
-        for (Iterator<Integer> p = new KthIntList(list, 2); p.hasNext();){
+                                                new IntList(5,
+                                                        new IntList(6, null)))))));
+        for (Iterator<Integer> p = new KthIntList(list, 2); p.hasNext();) {
             System.out.println(p.next());
         }
 

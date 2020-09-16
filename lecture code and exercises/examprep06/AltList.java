@@ -9,7 +9,7 @@ public class AltList<X, Y> {
 
     public AltList<Y, X> pairsSwapped() {
         AltList<Y, X> swap = new AltList<Y, X>(next.item, new AltList<X, Y>(this.item, null));
-        if(next.next != null) {
+        if (next.next != null) {
             swap.next.next = next.next.pairsSwapped();
         }
         return swap;
