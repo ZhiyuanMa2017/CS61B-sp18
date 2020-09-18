@@ -3,12 +3,27 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 
+import java.util.Random;
+
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
 
+    private long SEED =1648948916;
+    private Random rand = new Random(SEED);
+
+    private static class Position{
+        int x;
+        int y;
+
+        Position(int posX, int posY) {
+            x = posX;
+            y = posY;
+        }
+
+    }
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
