@@ -67,22 +67,22 @@ public class Room {
             int hallwayx = RandomUtils.uniform(rand, Math.max(thisx, thatx), Math.min(thisx + width,thatx + thatwidth));
             if(thisy > thaty) {
                 int ylength = thisy - thaty- thatheight + 1;
-                addColumn(world, new Position(hallwayx, thaty), ylength);
+                addColumn(world, new Position(hallwayx, thaty + thatheight), ylength);
             }
             if(thisy < thaty) {
                 int ylength = thaty - thisy- height + 1;
-                addColumn(world, new Position(hallwayx, thisy), ylength);
+                addColumn(world, new Position(hallwayx, thisy + height), ylength);
             }
         }
         if (checkoverlap(thisy, height, thaty,thatheight)) {
             int hallwayy = RandomUtils.uniform(rand, Math.max(thisy,thaty), Math.min(thisy + height,thaty + thatheight));
             if(thisx > thatx) {
                 int xlength = thisx - thatx- thatwidth + 1;
-                addRow(world, new Position(thatx,hallwayy), xlength);
+                addRow(world, new Position(thatx + thatwidth,hallwayy), xlength);
             }
             if(thisx < thatx) {
                 int xlength = thatx - thisx- width + 1;
-                addRow(world, new Position(thisx,hallwayy), xlength);
+                addRow(world, new Position(thisx + width,hallwayy), xlength);
             }
         }
     }

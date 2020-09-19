@@ -13,7 +13,7 @@ public class MapVisualTest {
          int WIDTH = 80;
          int HEIGHT = 40;
 
-        long SEED = 1234567894;
+        long SEED = 456465;
         Random rand = new Random(SEED);
         ter.initialize(WIDTH, HEIGHT);
 
@@ -25,7 +25,7 @@ public class MapVisualTest {
             }
         }
 
-        Room testroom = new Room(10, 10, rand);
+        Room testroom = new Room(15, 10, rand);
         testroom.GenerateRoomFloor(world, new Position(5,5));
 
 
@@ -34,7 +34,14 @@ public class MapVisualTest {
 //            System.out.println("overlap");
 //        }
         testroom2.GenerateRoomFloor(world, new Position(50,5));
-        testroom.GenerateHallway(world,testroom2);
+
+        Room testroom3 = new Room(50, 10, rand);
+        testroom3.GenerateRoomFloor(world, new Position(15,20));
+
+        testroom2.GenerateHallway(world,testroom);
+        testroom2.GenerateHallway(world,testroom3);
+        testroom3.GenerateHallway(world,testroom);
+
         MapGenerator.GenerateWall(world);
 
         System.out.println(TETile.toString(world));
