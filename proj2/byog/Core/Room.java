@@ -29,6 +29,24 @@ public class Room {
             floory += 1;
         }
     }
+
+    public void ClearRoomFloor(TETile[][] world) {
+        int floorx = position.x;
+        int floory = position.y;
+        for (int i = 0; i < height; i++) {
+            addNothing(world, new Position(floorx, floory), this.width);
+            floory += 1;
+        }
+    }
+
+    public static void addNothing(TETile[][] world, Position p, int width) {
+        for (int xi = 0; xi < width; xi += 1) {
+            int xCoord = p.x + xi;
+            int yCoord = p.y;
+            world[xCoord][yCoord] = Tileset.NOTHING;
+        }
+    }
+
     public static void addRow(TETile[][] world, Position p, int width) {
         for (int xi = 0; xi < width; xi += 1) {
             int xCoord = p.x + xi;
@@ -46,8 +64,8 @@ public class Room {
     }
 
     public boolean isOverlap(TETile[][] world, Position p) {
-        for (int i = -2; i < width + 2; i++) {
-            for (int j = -2; j < height + 2; j++) {
+        for (int i = -3; i < width + 3; i++) {
+            for (int j = -3; j < height + 3; j++) {
                 if (world[p.x + i][p.y + j] != Tileset.NOTHING) {
                     return true;
                 }
@@ -56,7 +74,24 @@ public class Room {
         return false;
     }
 
-    public void GenerateHallway(TETile[][] world, Room room2) {
+    public boolean isRowNothing(TETile[][] world, Position p, int rowlen) {
+        for (int i = 0; i < rowlen; i++) {
+            if (world[p.x + i][p.y] == Tileset.FLOOR) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public boolean isColumnNothing(TETile[][] world, Position p, int columnlen) {
+        for (int i = 0; i < columnlen; i++) {
+            if (world[p.x][p.y + i] == Tileset.FLOOR) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean GenerateHallway(TETile[][] world, Room room2) {
         int thisx = position.x;
         int thisy = position.y;
         int thatx = room2.position.x;
@@ -64,34 +99,48 @@ public class Room {
         int thatwidth = room2.width;
         int thatheight = room2.height;
         if (checkoverlap(thisx, width, thatx, thatwidth)) {
-            int hallwayx = RandomUtils.uniform(rand, Math.max(thisx, thatx), Math.min(thisx + width,thatx + thatwidth));
-            if(thisy > thaty) {
-                int ylength = thisy - thaty- thatheight + 1;
-                addColumn(world, new Position(hallwayx, thaty + thatheight), ylength);
+            int hallwayx = RandomUtils.uniform(rand, Math.max(thisx, thatx), Math.min(thisx + width - 1, thatx + thatwidth - 1) + 1);
+            if (thisy > thaty) {
+                int ylength = thisy - thaty - thatheight + 1;
+                if (isColumnNothing(world, new Position(hallwayx, thaty + thatheight), ylength - 1)) {
+                    addColumn(world, new Position(hallwayx, thaty + thatheight), ylength);
+                    return true;
+                }
             }
-            if(thisy < thaty) {
-                int ylength = thaty - thisy- height + 1;
-                addColumn(world, new Position(hallwayx, thisy + height), ylength);
+            if (thisy < thaty) {
+                int ylength = thaty - thisy - height + 1;
+                if (isColumnNothing(world, new Position(hallwayx, thisy + height ), ylength - 1)) {
+                    addColumn(world, new Position(hallwayx, thisy + height), ylength);
+                    return true;
+                }
+            }
+
+        }
+        if (checkoverlap(thisy, height, thaty, thatheight)) {
+            int hallwayy = RandomUtils.uniform(rand, Math.max(thisy, thaty), Math.min(thisy + height - 1, thaty + thatheight - 1) + 1);
+            if (thisx > thatx) {
+                int xlength = thisx - thatx - thatwidth + 1;
+                if (isRowNothing(world, new Position(thatx + thatwidth, hallwayy), xlength - 1)) {
+                    addRow(world, new Position(thatx + thatwidth, hallwayy), xlength);
+                    return true;
+                }
+            }
+            if (thisx < thatx) {
+                int xlength = thatx - thisx - width + 1;
+                if (isRowNothing(world, new Position(thisx + width, hallwayy), xlength - 1)) {
+                    addRow(world, new Position(thisx + width, hallwayy), xlength);
+                    return true;
+                }
             }
         }
-        if (checkoverlap(thisy, height, thaty,thatheight)) {
-            int hallwayy = RandomUtils.uniform(rand, Math.max(thisy,thaty), Math.min(thisy + height,thaty + thatheight));
-            if(thisx > thatx) {
-                int xlength = thisx - thatx- thatwidth + 1;
-                addRow(world, new Position(thatx + thatwidth,hallwayy), xlength);
-            }
-            if(thisx < thatx) {
-                int xlength = thatx - thisx- width + 1;
-                addRow(world, new Position(thisx + width,hallwayy), xlength);
-            }
-        }
+        return false;
     }
 
     public boolean checkoverlap(int p1, int len1, int p2, int len2) {
         int min1 = p1;
-        int max1 = p1 + len1;
+        int max1 = p1 + len1 - 1;
         int min2 = p2;
-        int max2 = p2 + len2;
+        int max2 = p2 + len2 - 1;
         if (min1 > max2 || min2 > max1) {
             return false;
         }

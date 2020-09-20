@@ -11,9 +11,9 @@ public class MapVisualTest {
         TERenderer ter = new TERenderer();
         /* Feel free to change the width and height. */
          int WIDTH = 80;
-         int HEIGHT = 40;
+         int HEIGHT = 30;
 
-        long SEED = 456465;
+        long SEED = 454545;
         Random rand = new Random(SEED);
         ter.initialize(WIDTH, HEIGHT);
 
@@ -25,23 +25,25 @@ public class MapVisualTest {
             }
         }
 
-        Room testroom = new Room(15, 10, rand);
-        testroom.GenerateRoomFloor(world, new Position(5,5));
-
-
-        Room testroom2 = new Room(20, 10, rand);
+//        Room testroom = new Room(15, 10, rand);
+//        testroom.GenerateRoomFloor(world, new Position(5,5));
+//
+//
+//        Room testroom2 = new Room(2, 2, rand);
 //        if (testroom2.isOverlap(world, new Position(50,20))) {
 //            System.out.println("overlap");
 //        }
-        testroom2.GenerateRoomFloor(world, new Position(50,5));
-
-        Room testroom3 = new Room(50, 10, rand);
-        testroom3.GenerateRoomFloor(world, new Position(15,20));
-
-        testroom2.GenerateHallway(world,testroom);
-        testroom2.GenerateHallway(world,testroom3);
-        testroom3.GenerateHallway(world,testroom);
-
+//        testroom2.GenerateRoomFloor(world, new Position(20,20));
+//        testroom.GenerateHallway(world, testroom2);
+//
+//        Room testroom3 = new Room(50, 10, rand);
+//        testroom3.GenerateRoomFloor(world, new Position(15,20));
+//
+//        testroom2.GenerateHallway(world,testroom);
+//        testroom2.GenerateHallway(world,testroom3);
+//        testroom3.GenerateHallway(world,testroom);
+        MapGenerator.GenerateRooms(world);
+        MapGenerator.GenerateHallways(world);
         MapGenerator.GenerateWall(world);
 
         System.out.println(TETile.toString(world));
