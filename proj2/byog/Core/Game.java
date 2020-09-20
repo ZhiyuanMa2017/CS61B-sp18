@@ -3,23 +3,67 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
-    public static final int HEIGHT = 40;
+    public static final int HEIGHT = 30;
 
-    private long SEED =1648948916;
-    private Random rand = new Random(SEED);
 
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
+        long SEED =1648948916;
+        Random rand = new Random(SEED);
+        StdDraw.setCanvasSize(640, 640);
+        StdDraw.setXscale(0, 640);
+        StdDraw.setYscale(0, 640);
+        StdDraw.clear(Color.BLACK);
+        StdDraw.enableDoubleBuffering();
+        Font bigFont = new Font("Time New Rome", Font.PLAIN, 30);
+        StdDraw.setFont(bigFont);
+        StdDraw.setPenColor(Color.white);
+        StdDraw.text(640 / 2, 640 *3 / 4, "CS61B: THE GAME");
+        Font smallFont = new Font("Monaco", Font.PLAIN, 20);
+        StdDraw.setFont(smallFont);
+        StdDraw.text(640 / 2, 345,  "New Game (N)");
+        StdDraw.text(640 / 2, 320,  "Load Game (L)");
+        StdDraw.text(640 / 2, 295,  "Quit (Q)");
+        StdDraw.show();
+        Character inputkey = solicitInput();
+        if (inputkey.equals('n')) {
+            StdDraw.clear(Color.BLACK);
+            StdDraw.text(320, 320, "Enter seed. Press S to end.");
+            StdDraw.show();
+            String input = "";
+            boolean s = true;
+            while(s) {
+                if (StdDraw.hasNextKeyTyped()) {
+                    char key = Character.toLowerCase(StdDraw.nextKeyTyped());
+                    input += key;
+                    StdDraw.clear(Color.BLACK);
+                    StdDraw.text(320, 320, "Enter seed. Press S to end.");
+                    StdDraw.text(320, 300, input);
+                    StdDraw.show();
+                    if(key == 's'){
+                        s = false;
+                    }
+                }
+            }
+            System.out.println("13215614561456");
+            StdDraw.clear(Color.BLACK);
+            StdDraw.text(320, 320, "Your input: " + input);
+            StdDraw.show();
+            //playWithInputString(input);
+        }
     }
 
     /**
@@ -53,4 +97,22 @@ public class Game {
         }
         return world;
     }
+
+    public char solicitInput() {
+        ArrayList<Character> nlq = new ArrayList<>();
+        nlq.add('n');
+        nlq.add('l');
+        nlq.add('q');
+
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char key = Character.toLowerCase(StdDraw.nextKeyTyped());
+            if(nlq.contains(key)) {
+                return key;
+            }
+        }
+    }
 }
+

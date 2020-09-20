@@ -1,5 +1,6 @@
 package byog.Core;
 
+import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
@@ -7,18 +8,19 @@ import java.util.*;
 
 public class MapGenerator {
     static int WIDTH = 80;
-    static int HEIGHT = 30;
-    static long SEED = 454545;
+    static int HEIGHT = 40;
+    static long SEED = 123456;
     static Random rand = new Random(SEED);
     static ArrayList<Room> rooms;
 
+
     public static void GenerateRooms(TETile[][] world) {
-        int roomnumber = RandomUtils.uniform(rand, 9, 19);
+        int roomnumber = RandomUtils.uniform(rand, 15, 25);
         rooms = new ArrayList<>(roomnumber);
         int i = 0;
         while (i < roomnumber) {
-            int w = RandomUtils.uniform(rand, 1, 14);
-            int h = RandomUtils.uniform(rand, 1, 14);
+            int w = RandomUtils.uniform(rand, 1, 15);
+            int h = RandomUtils.uniform(rand, 1, 15);
             Room thisroom = new Room(w, h, rand);
             int xp  = RandomUtils.uniform(rand, 3, WIDTH - w - 2);
             int yp  = RandomUtils.uniform(rand, 3, HEIGHT - h - 2);
