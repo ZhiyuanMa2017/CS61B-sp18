@@ -7,7 +7,15 @@ import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
+
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class Game {
     TERenderer ter = new TERenderer();
@@ -21,8 +29,6 @@ public class Game {
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
-        long SEED =1648948916;
-        Random rand = new Random(SEED);
         StdDraw.setCanvasSize(640, 640);
         StdDraw.setXscale(0, 640);
         StdDraw.setYscale(0, 640);
@@ -31,30 +37,30 @@ public class Game {
         Font bigFont = new Font("Time New Rome", Font.PLAIN, 30);
         StdDraw.setFont(bigFont);
         StdDraw.setPenColor(Color.white);
-        StdDraw.text(640 / 2, 640 *3 / 4, "CS61B: THE GAME");
+        StdDraw.text(320, 480, "CS61B: THE GAME");
         Font smallFont = new Font("Monaco", Font.PLAIN, 20);
         StdDraw.setFont(smallFont);
-        StdDraw.text(640 / 2, 345,  "New Game (N)");
-        StdDraw.text(640 / 2, 320,  "Load Game (L)");
-        StdDraw.text(640 / 2, 295,  "Quit (Q)");
+        StdDraw.text(320, 345,  "New Game (N)");
+        StdDraw.text(320, 320,  "Load Game (L)");
+        StdDraw.text(320, 295,  "Quit (Q)");
         StdDraw.show();
-        Character inputkey = solicitInput();
-        if (inputkey.equals('n')) {
+        char inputkey = solicitInputNLQ();
+        if (inputkey == 'n') {
             StdDraw.clear(Color.BLACK);
             StdDraw.text(320, 320, "Enter seed. Press S to end.");
             StdDraw.show();
             String input = "";
-            boolean s = true;
-            while(s) {
+            boolean goon = true;
+            while(goon) {
                 if (StdDraw.hasNextKeyTyped()) {
                     char key = Character.toLowerCase(StdDraw.nextKeyTyped());
-                    input += key;
+                    input = input + key;
                     StdDraw.clear(Color.BLACK);
                     StdDraw.text(320, 320, "Enter seed. Press S to end.");
-                    StdDraw.text(320, 300, input);
+                    StdDraw.text(320, 300, "Your input: " + input);
                     StdDraw.show();
                     if(key == 's'){
-                        s = false;
+                        goon = false;
                     }
                 }
             }
@@ -62,7 +68,16 @@ public class Game {
             StdDraw.clear(Color.BLACK);
             StdDraw.text(320, 320, "Your input: " + input);
             StdDraw.show();
-            //playWithInputString(input);
+            TETile[][] world = playWithInputString(input);
+            ter.renderFrame(world);
+
+        }
+        if (inputkey == 'q') {
+            System.exit(0);
+        }
+        if (inputkey == 'l') {
+            TETile[][] world = playWithInputString(String.valueOf(inputkey));
+            ter.renderFrame(world);
         }
     }
 
@@ -79,40 +94,105 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // TODO: Fill out this method to run the game using the input passed in,
+        // Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
-//        TETile[][] finalWorldFrame = null;
-
-
-        ter.initialize(WIDTH, HEIGHT);
-
-        // initialize tiles
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
-        for (int x = 0; x < WIDTH; x += 1) {
-            for (int y = 0; y < HEIGHT; y += 1) {
-                world[x][y] = Tileset.NOTHING;
+        char[] inputchar = input.toCharArray();
+        int len = inputchar.length;
+        String movestring = "";
+        if (inputchar[0] == 'l') {
+            World loadworld = loadWorld();
+            loadworld.init();
+            if (saveornot(inputchar)) {
+                movestring = input.substring(1, len - 2);
+            } else {
+                movestring = input.substring(1);
             }
+            for(int i = 0; i < movestring.length(); i++) {
+                loadworld.move(movestring.charAt(i));
+            }
+
         }
-        return world;
+
+        if (inputchar[0] == 'n') {
+
+        }
+
+
+        return null;
     }
 
-    public char solicitInput() {
+
+    public boolean saveornot(char[] inputchar) {
+        int len = inputchar.length;
+        if (inputchar[len - 1] == 'q') {
+            if(inputchar[len - 2] == ':'){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public char solicitInputNLQ() {
         ArrayList<Character> nlq = new ArrayList<>();
         nlq.add('n');
         nlq.add('l');
         nlq.add('q');
-
         while (true) {
-            if (!StdDraw.hasNextKeyTyped()) {
-                continue;
-            }
-            char key = Character.toLowerCase(StdDraw.nextKeyTyped());
-            if(nlq.contains(key)) {
-                return key;
+            if (StdDraw.hasNextKeyTyped()) {
+                char key = Character.toLowerCase(StdDraw.nextKeyTyped());
+                if (nlq.contains(key)) {
+                    return key;
+                }
             }
         }
     }
-}
 
+    private static World loadWorld() {
+        File f = new File("./world.ser");
+        if (f.exists()) {
+            try {
+                FileInputStream fs = new FileInputStream(f);
+                ObjectInputStream os = new ObjectInputStream(fs);
+                World loadWorld = (World) os.readObject();
+                os.close();
+                return loadWorld;
+            } catch (FileNotFoundException e) {
+                System.out.println("file not found");
+                System.exit(0);
+            } catch (IOException e) {
+                System.out.println(e);
+                System.exit(0);
+            } catch (ClassNotFoundException e) {
+                System.out.println("class not found");
+                System.exit(0);
+            }
+        }
+
+        /* In the case no World has been saved yet, we return a new one. */
+        return new World();
+    }
+
+    private static void saveWorld(World w) {
+        File f = new File("./world.ser");
+        try {
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            FileOutputStream fs = new FileOutputStream(f);
+            ObjectOutputStream os = new ObjectOutputStream(fs);
+            os.writeObject(w);
+            os.close();
+        }  catch (FileNotFoundException e) {
+            System.out.println("file not found");
+            System.exit(0);
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(0);
+        }
+    }
+
+
+
+}

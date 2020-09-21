@@ -1,6 +1,5 @@
 package byog.Core;
 
-import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
@@ -9,8 +8,7 @@ import java.util.*;
 public class MapGenerator {
     static int WIDTH = 80;
     static int HEIGHT = 40;
-    static long SEED = 123456;
-    static Random rand = new Random(SEED);
+    static Random rand;
     static ArrayList<Room> rooms;
 
 
@@ -98,7 +96,5 @@ public class MapGenerator {
             }
         }
     }
-
-
 
 }
