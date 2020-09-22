@@ -12,10 +12,10 @@ import java.util.Random;
  * Draws a world consisting of hexagonal regions.
  */
 public class HexWorld {
-    private static final long SEED =1648948916;
+    private static final long SEED = 1648948916;
     private static final Random RANDOM = new Random(SEED);
 
-    private static class Position{
+    private static class Position {
         int x;
         int y;
 
@@ -146,7 +146,7 @@ public class HexWorld {
         return pp;
     }
 
-    public static void DrawingATesselationofHexagons(TETile[][] world, Position p, int s) {
+    public static void drawingATesselationofHexagons(TETile[][] world, Position p, int s) {
         Position pp = p;
         drawRandomVerticalHexes(world, pp, 3, s);
         pp = bottomRight(pp, s);
@@ -204,16 +204,16 @@ public class HexWorld {
     }
 
     public static void main(String[] args) {
-        int WIDTH = 50;
-        int HEIGHT = 50;
+        int wIDTH = 50;
+        int hEIGHT = 50;
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         TERenderer ter = new TERenderer();
-        ter.initialize(WIDTH, HEIGHT);
+        ter.initialize(wIDTH, hEIGHT);
 
         // initialize tiles
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
-        for (int x = 0; x < WIDTH; x += 1) {
-            for (int y = 0; y < HEIGHT; y += 1) {
+        TETile[][] world = new TETile[wIDTH][hEIGHT];
+        for (int x = 0; x < wIDTH; x += 1) {
+            for (int y = 0; y < hEIGHT; y += 1) {
                 world[x][y] = Tileset.NOTHING;
             }
         }
@@ -223,7 +223,7 @@ public class HexWorld {
         //addHexagon(world, p, 3, randomTile());
 
         //drawRandomVerticalHexes(world, p, 3, 3);
-        DrawingATesselationofHexagons(world, p, 3);
+        drawingATesselationofHexagons(world, p, 3);
 
         // draws the world to the screen
         ter.renderFrame(world);

@@ -2,7 +2,7 @@ package byog.Core;
 
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
-import byog.TileEngine.Tileset;
+
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
@@ -40,45 +40,41 @@ public class Game {
         StdDraw.text(320, 480, "CS61B: THE GAME");
         Font smallFont = new Font("Monaco", Font.PLAIN, 20);
         StdDraw.setFont(smallFont);
-        StdDraw.text(320, 345,  "New Game (N)");
-        StdDraw.text(320, 320,  "Load Game (L)");
-        StdDraw.text(320, 295,  "Quit (Q)");
+        StdDraw.text(320, 345, "New Game (N)");
+        StdDraw.text(320, 320, "Load Game (L)");
+        StdDraw.text(320, 295, "Quit (Q)");
         StdDraw.show();
         char inputkey = solicitInputNLQ();
+        World playworld = new World();
         if (inputkey == 'n') {
             StdDraw.clear(Color.BLACK);
             StdDraw.text(320, 320, "Enter seed. Press S to end.");
             StdDraw.show();
             String input = "";
-            boolean goon = true;
-            while(goon) {
+            while (true) {
                 if (StdDraw.hasNextKeyTyped()) {
                     char key = Character.toLowerCase(StdDraw.nextKeyTyped());
+                    if (key == 's') {
+                        break;
+                    }
                     input = input + key;
                     StdDraw.clear(Color.BLACK);
                     StdDraw.text(320, 320, "Enter seed. Press S to end.");
                     StdDraw.text(320, 300, "Your input: " + input);
                     StdDraw.show();
-                    if(key == 's'){
-                        goon = false;
-                    }
                 }
             }
-            System.out.println("13215614561456");
-            StdDraw.clear(Color.BLACK);
-            StdDraw.text(320, 320, "Your input: " + input);
-            StdDraw.show();
-            TETile[][] world = playWithInputString(input);
-            ter.renderFrame(world);
-
+            int intseed = Integer.parseInt(input);
+            playworld = new World(WIDTH, HEIGHT, intseed);
+            playworld.init();
         }
         if (inputkey == 'q') {
             System.exit(0);
         }
         if (inputkey == 'l') {
-            TETile[][] world = playWithInputString(String.valueOf(inputkey));
-            ter.renderFrame(world);
+            playworld = loadWorld();
         }
+        play(playworld);
     }
 
     /**
@@ -93,41 +89,61 @@ public class Game {
      * @param input the input string to feed to your program
      * @return the 2D TETile[][] representing the state of the world
      */
-    public TETile[][] playWithInputString(String input) {
+    public static TETile[][] playWithInputString(String input) {
         // Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
-        char[] inputchar = input.toCharArray();
+        char[] inputchar = input.toLowerCase().toCharArray();
         int len = inputchar.length;
         String movestring = "";
+        String seed = "";
+        World playworld = new World();
         if (inputchar[0] == 'l') {
-            World loadworld = loadWorld();
-            loadworld.init();
+            playworld = loadWorld();
             if (saveornot(inputchar)) {
                 movestring = input.substring(1, len - 2);
             } else {
                 movestring = input.substring(1);
             }
-            for(int i = 0; i < movestring.length(); i++) {
-                loadworld.move(movestring.charAt(i));
+            for (int i = 0; i < movestring.length(); i++) {
+                playworld.move(movestring.charAt(i));
+            }
+            if (saveornot(inputchar)) {
+                saveWorld(playworld);
             }
 
+        } else if (inputchar[0] == 'n') {
+            for (int i = 1; i < inputchar.length; i++) {
+                if (inputchar[i] != 's') {
+                    seed += inputchar[i];
+                } else {
+                    if (saveornot(inputchar)) {
+                        movestring = input.substring(i + 1, inputchar.length - 2);
+                    } else {
+                        movestring = input.substring(i + 1);
+                    }
+                    break;
+                }
+            }
+            int intseed = Integer.parseInt(seed);
+            playworld = new World(WIDTH, HEIGHT, intseed);
+            playworld.init();
+            for (int i = 0; i < movestring.length(); i++) {
+                playworld.move(movestring.charAt(i));
+            }
+            if (saveornot(inputchar)) {
+                saveWorld(playworld);
+            }
         }
-
-        if (inputchar[0] == 'n') {
-
-        }
-
-
-        return null;
+        return playworld.world;
     }
 
 
-    public boolean saveornot(char[] inputchar) {
+    public static boolean saveornot(char[] inputchar) {
         int len = inputchar.length;
         if (inputchar[len - 1] == 'q') {
-            if(inputchar[len - 2] == ':'){
+            if (inputchar[len - 2] == ':') {
                 return true;
             }
         }
@@ -150,7 +166,7 @@ public class Game {
     }
 
     private static World loadWorld() {
-        File f = new File("./world.ser");
+        File f = new File("./byog/Core/world.ser");
         if (f.exists()) {
             try {
                 FileInputStream fs = new FileInputStream(f);
@@ -175,7 +191,7 @@ public class Game {
     }
 
     private static void saveWorld(World w) {
-        File f = new File("./world.ser");
+        File f = new File("./byog/Core/world.ser");
         try {
             if (!f.exists()) {
                 f.createNewFile();
@@ -193,6 +209,51 @@ public class Game {
         }
     }
 
+    public void play(World playworld) {
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(playworld.world);
+        showTile(playworld);
+        while (true) {
+            showTile(playworld);
+            if (StdDraw.hasNextKeyTyped()) {
+                char key = Character.toLowerCase(StdDraw.nextKeyTyped());
+                if (key == 'w' || key == 'a' || key == 's' || key == 'd') {
+                    playworld.move(key);
+                    ter.renderFrame(playworld.world);
+                    showTile(playworld);
+                }
+                if (key == ':') {
+                    while (true) {
+                        if (StdDraw.hasNextKeyTyped()) {
+                            char exit = Character.toLowerCase(StdDraw.nextKeyTyped());
+                            if (exit == 'q') {
+                                saveWorld(playworld);
+                                System.exit(0);
+                            } else {
+                                showTile(playworld);
+                                ter.renderFrame(playworld.world);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    public void showTile(World playworld) {
+        int x = (int) StdDraw.mouseX();
+        int y = (int) StdDraw.mouseY();
+        String text = "";
+        if (x < WIDTH && y < HEIGHT) {
+            text = playworld.world[x][y].description();
+            StdDraw.setPenColor(Color.white);
+            Font smallFont = new Font("Monaco", Font.PLAIN, 20);
+            StdDraw.setFont(smallFont);
+            StdDraw.textLeft(1, 29, text);
+        }
+        StdDraw.show();
+        ter.renderFrame(playworld.world);
+    }
 
 }

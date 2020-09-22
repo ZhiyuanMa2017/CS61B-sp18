@@ -2,7 +2,7 @@ package byog.Core;
 
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-import byog.lab5.HexWorld;
+
 
 import java.util.Random;
 
@@ -12,14 +12,14 @@ public class Room {
     private Position position;
     private Random rand;
 
-    Room(int w, int h, Random rand){
+    Room(int w, int h, Random rand) {
         width = w;
         height = h;
-        position = new Position(0,0);
+        position = new Position(0, 0);
         this.rand = rand;
     }
 
-    public void GenerateRoomFloor(TETile[][] world, Position p) {
+    public void generateRoomFloor(TETile[][] world, Position p) {
         position.x = p.x;
         position.y = p.y;
         int floorx = p.x;
@@ -30,7 +30,7 @@ public class Room {
         }
     }
 
-    public void ClearRoomFloor(TETile[][] world) {
+    public void clearRoomFloor(TETile[][] world) {
         int floorx = position.x;
         int floory = position.y;
         for (int i = 0; i < height; i++) {
@@ -91,7 +91,7 @@ public class Room {
         return true;
     }
 
-    public boolean GenerateHallway(TETile[][] world, Room room2) {
+    public boolean generateHallway(TETile[][] world, Room room2) {
         int thisx = position.x;
         int thisy = position.y;
         int thatx = room2.position.x;
@@ -99,17 +99,20 @@ public class Room {
         int thatwidth = room2.width;
         int thatheight = room2.height;
         if (checkoverlap(thisx, width, thatx, thatwidth)) {
-            int hallwayx = RandomUtils.uniform(rand, Math.max(thisx, thatx), Math.min(thisx + width - 1, thatx + thatwidth - 1) + 1);
+            int hallwayx = RandomUtils.uniform(
+                    rand, Math.max(thisx, thatx),
+                    Math.min(thisx + width - 1, thatx + thatwidth - 1) + 1);
             if (thisy > thaty) {
                 int ylength = thisy - thaty - thatheight + 1;
-                if (isColumnNothing(world, new Position(hallwayx, thaty + thatheight), ylength - 1)) {
+                if (isColumnNothing(world,
+                        new Position(hallwayx, thaty + thatheight), ylength - 1)) {
                     addColumn(world, new Position(hallwayx, thaty + thatheight), ylength);
                     return true;
                 }
             }
             if (thisy < thaty) {
                 int ylength = thaty - thisy - height + 1;
-                if (isColumnNothing(world, new Position(hallwayx, thisy + height ), ylength - 1)) {
+                if (isColumnNothing(world, new Position(hallwayx, thisy + height), ylength - 1)) {
                     addColumn(world, new Position(hallwayx, thisy + height), ylength);
                     return true;
                 }
@@ -117,7 +120,9 @@ public class Room {
 
         }
         if (checkoverlap(thisy, height, thaty, thatheight)) {
-            int hallwayy = RandomUtils.uniform(rand, Math.max(thisy, thaty), Math.min(thisy + height - 1, thaty + thatheight - 1) + 1);
+            int hallwayy = RandomUtils.uniform(rand,
+                    Math.max(thisy, thaty),
+                    Math.min(thisy + height - 1, thaty + thatheight - 1) + 1);
             if (thisx > thatx) {
                 int xlength = thisx - thatx - thatwidth + 1;
                 if (isRowNothing(world, new Position(thatx + thatwidth, hallwayy), xlength - 1)) {
