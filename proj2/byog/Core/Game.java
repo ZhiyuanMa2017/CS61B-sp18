@@ -168,7 +168,7 @@ public class Game {
     }
 
     private static World loadWorld() {
-        File f = new File("./byog/Core/world.ser");
+        File f = new File("./world.ser");
         if (f.exists()) {
             try {
                 FileInputStream fs = new FileInputStream(f);
@@ -193,7 +193,7 @@ public class Game {
     }
 
     private static void saveWorld(World w) {
-        File f = new File("./byog/Core/world.ser");
+        File f = new File("./world.ser");
         try {
             if (!f.exists()) {
                 f.createNewFile();
