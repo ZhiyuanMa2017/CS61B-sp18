@@ -64,7 +64,7 @@ public class Game {
                     StdDraw.show();
                 }
             }
-            int intseed = Integer.parseInt(input);
+            long intseed = Long.parseLong(input);
             playworld = new World(WIDTH, HEIGHT, intseed);
             playworld.init();
         }
@@ -126,7 +126,7 @@ public class Game {
                     break;
                 }
             }
-            int intseed = Integer.parseInt(seed);
+            long intseed = Long.parseLong(seed);
             playworld = new World(WIDTH, HEIGHT, intseed);
             playworld.init();
             for (int i = 0; i < movestring.length(); i++) {

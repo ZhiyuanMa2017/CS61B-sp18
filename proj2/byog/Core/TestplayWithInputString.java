@@ -33,12 +33,13 @@ public class TestplayWithInputString {
     }
     public static void main(String[] args) {
         TETile[][] test1 = Game.playWithInputString("N123SDDDWWWDDD:q");
-        TETile[][] test3 = Game.playWithInputString("LDDD:Q");
-        String result1 = TETile.toString(test1);
+        TETile[][] test2 = Game.playWithInputString("LDDD:Q");
+        TETile[][] test3 = Game.playWithInputString("n5643591630821615871swwaawd");
+        String result1 = TETile.toString(test3);
 
         TERenderer ter = new TERenderer();
         ter.initialize(80, 30);
-        ter.renderFrame(test1);
+        ter.renderFrame(test3);
 
     }
 }
