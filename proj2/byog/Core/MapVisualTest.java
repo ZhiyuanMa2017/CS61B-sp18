@@ -5,15 +5,16 @@ import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
 import java.util.Random;
 
 public class MapVisualTest {
     public static void main(String[] args) {
         TERenderer ter = new TERenderer();
         /* Feel free to change the width and height. */
-         int wIDTH = 80;
-         int hEIGHT = 30;
+        int wIDTH = 80;
+        int hEIGHT = 30;
 
         ter.initialize(wIDTH, hEIGHT);
 
