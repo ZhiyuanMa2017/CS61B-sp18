@@ -42,7 +42,7 @@ public class Test {
                 break;
             }
         }
-        //System.out.println(seed);
+        System.out.println(seed);
         System.out.println(movestring);
     }
 }
