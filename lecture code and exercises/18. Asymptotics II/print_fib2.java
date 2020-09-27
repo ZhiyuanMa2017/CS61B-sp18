@@ -1,7 +1,7 @@
-public class print_fib{
+public class print_fib2{
 	public void print_fib(int n){
 		for(int i = 0; i < n; i++i){
-			System.out.println(fib(i));
+			System.out.println(fib(n));
 		}
 	}
 
