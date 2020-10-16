@@ -41,4 +41,3 @@ public class WeightedQuickUnion implements DisjointSets {
     // O(logN)
 
 }
-
