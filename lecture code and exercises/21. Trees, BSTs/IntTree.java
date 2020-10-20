@@ -17,6 +17,9 @@ public class IntTree {
         return T;
     }
 
+    /** Assuming T is a BST, and L is the sentinel of a
+     * right-leaning BST, return the result of inserting all items of L
+     * that are <= NEXT in T, removing them from L. */
     private static IntTree mergeRight2(IntTree T, int next, IntTree L) {
         if(L.left == null) {
             return T;
@@ -35,7 +38,6 @@ public class IntTree {
             if(L.left != null && T.left.data > T.data) {
                 T.right = mergeRight2(T.right, next, L);
             }
-            return T;
         }
         return T;
     }
