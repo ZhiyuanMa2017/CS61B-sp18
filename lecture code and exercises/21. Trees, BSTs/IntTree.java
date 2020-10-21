@@ -13,7 +13,8 @@ public class IntTree {
      * new nodes. In the worst case, it takes time linear in the
      * total number of items in T and L. */
     public static IntTree mergeRight (IntTree T, IntTree L) {
-        T.left = mergeRight2(T.left, Integer.MAX_VALUE, L);
+        while(L.left!=null){
+        T.left = mergeRight2(T.left, Integer.MAX_VALUE, L);}
         return T;
     }
 
@@ -28,7 +29,6 @@ public class IntTree {
             if(L.left.data <= next) {
                 IntTree p = L.left;
                 L.left = L.left.right;
-                p.right = mergeRight2(null, next, L);
                 return p;
             }
         } else {
@@ -40,6 +40,25 @@ public class IntTree {
             }
         }
         return T;
+    }
+
+    public static void main(String[] args) {
+        IntTree t8 = new IntTree(8, null, null);
+        IntTree t10 = new IntTree(10, t8, null);
+        IntTree t3 = new IntTree(3, null, t10);
+        IntTree t14 = new IntTree(14, null, null);
+        IntTree t27 = new IntTree(27, null, null);
+        IntTree t16 = new IntTree(16, t14, t27);
+        IntTree t12 = new IntTree(12, t3, t16);
+        IntTree T = new IntTree(123456, t12, null);
+
+        IntTree t26 = new IntTree(26, null, null);
+        IntTree t11 = new IntTree(11, null, t26);
+        IntTree t1 = new IntTree(1, null, t11);
+        IntTree L = new IntTree(123456, t1, null);
+
+        IntTree result = mergeRight(T, L);
+
     }
 
 }
