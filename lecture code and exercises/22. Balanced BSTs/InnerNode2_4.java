@@ -1,13 +1,16 @@
 class InnerNode2_4 extends Node2_4 {
+    int size() {
+        return 0;
+    }
     @Override
     boolean contains(String key) {
-        for () {
-            if () {
+        for (int k = 0; k < size()-1; k += 1 ) {
+            if (key(k).equals(key) ) {
                 return true;
-            } else if () {
-                return kid().contains(key);
+            } else if (key(k).compareTo(key) > 0 ) {
+                return kid(k ).contains(key);
             }
         }
-        return 
+        return kid(size() - 1).contains(key);
     }
 }
