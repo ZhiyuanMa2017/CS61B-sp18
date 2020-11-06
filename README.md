@@ -7,3 +7,11 @@ CS61B Spring 2013 Midterm Solution: https://www.cs.princeton.edu/courses/archive
 CS61B Fall 2014 Midterm2 Solution: https://inst.eecs.berkeley.edu/~cs61b/fa14/test-solutions/test2-soln.pdf  
 CS61B Spring 2016 Midterm2 Walkthrough: https://www.youtube.com/watch?v=rciRgoiJVGY  
 CS61B Spring 2017 Midterm2 Walkthrough: https://www.youtube.com/channel/UCqiudaLea8HNE23GBC34R5Q/videos  
+CS61B Spring 2016 MT1;  
+CS61B Spring 2017 Exam Prep;  
+CS61B Spring 2018 MT1;  
+CS61B Spring 2019 MT1;  
+CS61B Spring 2019 MT2;  
+CS61B Fall 2020 MT1: https://www.youtube.com/channel/UCNBSbBTFx8nFahcQyZOYOgQ/videos  
+CS61B Spring 2019 Discussion: https://www.youtube.com/channel/UCdh0Rpk6C1w1ypiEjjKh_Uw/videos  
+CS61B Fall 2020 Discussion: https://www.youtube.com/channel/UCtic6FhXmfR0PSntIXjhwaw/videos
