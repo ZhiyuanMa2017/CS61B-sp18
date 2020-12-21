@@ -28,7 +28,7 @@ public class Percolation {
 
     public void open(int row, int col) {
         if (row < 0 || row > n - 1 || col < 0 || col > n - 1) {
-            throw new IllegalArgumentException("illegal input");
+            throw new IndexOutOfBoundsException("index out of bounds");
         }
         if (!grid[row][col]) {
             grid[row][col] = true;
@@ -68,7 +68,7 @@ public class Percolation {
 
     public boolean isOpen(int row, int col) {
         if (row < 0 || row > n - 1 || col < 0 || col > n - 1) {
-            throw new IllegalArgumentException("illegal input");
+            throw new IndexOutOfBoundsException("index out of bounds");
         }
         return grid[row][col];
     }
@@ -76,7 +76,7 @@ public class Percolation {
 
     public boolean isFull(int row, int col) {
         if (row < 0 || row > n - 1 || col < 0 || col > n - 1) {
-            throw new IllegalArgumentException("illegal input");
+            throw new IndexOutOfBoundsException("index out of bounds");
         }
         if (!isOpen(row, col)) {
             return false;
