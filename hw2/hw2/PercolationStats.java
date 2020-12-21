@@ -28,7 +28,7 @@ public class PercolationStats {
             }
             p.open(row, col);
         }
-        return (double) p.numberOfOpenSites() /(n*n);
+        return (double) p.numberOfOpenSites() / (n * n);
     }
 
     public double mean() {
