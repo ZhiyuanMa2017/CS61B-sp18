@@ -200,7 +200,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         if (item == null) {
             return;
         }
-        for (int i = 0; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (item.equals(contents[i].myItem)) {
                 double prevpriority = contents[i].myPriority;
                 Node newnode = new Node(item, priority);
@@ -210,7 +210,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
                 } else if (prevpriority < priority) {
                     sink(i);
                 }
-                break;
+                return;
             }
         }
     }
