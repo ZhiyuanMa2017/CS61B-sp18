@@ -74,9 +74,6 @@ public class Board implements WorldState {
         int hammingdis = 0;
         for (int i = 0; i < size(); i++) {
             for (int j = 0; j < size(); j++) {
-                if (board[i][j] == 0) {
-                    continue;
-                }
                 int goal = i * size() + j + 1;
                 if (goal < size() * size() && goal != board[i][j]) {
                     hammingdis++;
