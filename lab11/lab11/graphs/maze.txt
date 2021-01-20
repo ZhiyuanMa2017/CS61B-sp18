@@ -1,5 +1,5 @@
-N = 8
-rseed = 4
+N = 20
+rseed = 1234
 
 MazeType = SINGLE_GAP
 %MazeType = POPEN_SOLVABLE
