@@ -84,7 +84,11 @@ public class SeamCarver {
                     m[i][j] = e[i][j];
                 } else {
                     if (i == 0) {
-                        m[i][j] = e[i][j] + Math.min(m[i][j - 1], m[i + 1][j - 1]);
+                        if (i + 1 < width) {
+                            m[i][j] = e[i][j] + Math.min(m[i][j - 1], m[i + 1][j - 1]);
+                        } else {
+                            m[i][j] = e[i][j] + m[i][j - 1];
+                        }
                     } else if (i == width - 1) {
                         m[i][j] = e[i][j] + Math.min(m[i][j - 1], m[i - 1][j - 1]);
                     } else {
@@ -105,26 +109,30 @@ public class SeamCarver {
         for (int j = height - 1; j > 0; j--) {
             seam[j] = lasti;
             if (lasti == 0) {
-                if (m[lasti][j - 1] < m[lasti + 1][j - 1]) {
-                    continue;
+                if (lasti + 1 < width) {
+                    if (m[lasti][j - 1] <= m[lasti + 1][j - 1]) {
+                        continue;
+                    } else {
+                        lasti++;
+                    }
                 } else {
-                    lasti++;
+                    continue;
                 }
             } else if (lasti == width - 1) {
-                if (m[lasti][j - 1] < m[lasti - 1][j - 1]) {
+                if (m[lasti][j - 1] <= m[lasti - 1][j - 1]) {
                     continue;
                 } else {
                     lasti--;
                 }
             } else {
                 if (m[lasti - 1][j - 1] < m[lasti][j - 1]) {
-                    if (m[lasti - 1][j - 1] < m[lasti + 1][j - 1]) {
+                    if (m[lasti - 1][j - 1] <= m[lasti + 1][j - 1]) {
                         lasti--;
                     } else {
                         lasti++;
                     }
                 } else {
-                    if (m[lasti][j - 1] < m[lasti + 1][j - 1]) {
+                    if (m[lasti][j - 1] <= m[lasti + 1][j - 1]) {
                         continue;
                     } else {
                         lasti++;
@@ -145,5 +153,6 @@ public class SeamCarver {
     public void removeVerticalSeam(int[] seam) {
         SeamRemover.removeVerticalSeam(picture, findVerticalSeam());
     }
+
     // remove vertical seam from picture
 }
