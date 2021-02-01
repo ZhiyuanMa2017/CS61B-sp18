@@ -5,7 +5,7 @@ import lab14lib.Generator;
 
 public class SineWaveGenerator implements Generator {
 	private double frequency;
-	private int state;	
+	private int state;
 
 	public SineWaveGenerator(double frequency) {
 		state = 0;

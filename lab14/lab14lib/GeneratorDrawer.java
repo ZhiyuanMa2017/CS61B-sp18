@@ -1,8 +1,9 @@
 package lab14lib;
+
 import lab14.SineWaveGenerator;
-import org.knowm.xchart.XYChart;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
+import org.knowm.xchart.XYChart;
 
 public class GeneratorDrawer {
 	private Generator generator;
