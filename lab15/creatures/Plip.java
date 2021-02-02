@@ -20,6 +20,8 @@ public class Plip extends Creature {
     /** blue color. */
     private int b;
 
+    private double moveProbability = 0.5;
+
     /** creates plip with energy equal to E. */
     public Plip(double e) {
         super("plip");
@@ -42,7 +44,9 @@ public class Plip extends Creature {
      *  that you get this exactly correct.
      */
     public Color color() {
-        g = 63;
+        r = 99;
+        b = 76;
+        g = (int) (63 + 96 * this.energy);
         return color(r, g, b);
     }
 
@@ -55,11 +59,14 @@ public class Plip extends Creature {
      *  private static final variable. This is not required for this lab.
      */
     public void move() {
+        this.energy -= 0.15;
     }
 
 
     /** Plips gain 0.2 energy when staying due to photosynthesis. */
     public void stay() {
+        this.energy += 0.2;
+        this.energy = Math.min(2.0, this.energy);
     }
 
     /** Plips and their offspring each get 50% of the energy, with none
@@ -67,7 +74,9 @@ public class Plip extends Creature {
      *  Plip.
      */
     public Plip replicate() {
-        return this;
+        double e = this.energy * 0.5;
+        this.energy = e;
+        return new Plip(e);
     }
 
     /** Plips take exactly the following actions based on NEIGHBORS:
@@ -81,7 +90,23 @@ public class Plip extends Creature {
      *  for an example to follow.
      */
     public Action chooseAction(Map<Direction, Occupant> neighbors) {
+        List<Direction> empties = getNeighborsOfType(neighbors, "empty");
+        List<Direction> clorus = getNeighborsOfType(neighbors, "clorus");
+        if (empties.size() == 0) {
+            return new Action(Action.ActionType.STAY);
+        } else if (this.energy > 1.0) {
+            Direction replicateDir = HugLifeUtils.randomEntry(empties);
+            return new Action(Action.ActionType.REPLICATE, replicateDir);
+        } else if (clorus.size() > 0 && HugLifeUtils.random() < moveProbability) {
+            Direction moveDir = HugLifeUtils.randomEntry(empties);
+            return new Action(Action.ActionType.MOVE, moveDir);
+        }
+
         return new Action(Action.ActionType.STAY);
+    }
+
+    public String name() {
+        return "plip";
     }
 
 }
