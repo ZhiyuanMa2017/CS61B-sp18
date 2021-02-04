@@ -164,6 +164,27 @@ public class Trie<Value> {
         return longestPrefixOf(x.next[c], query, d + 1, length);
     }
 
+    public boolean hasPrefix(String query) {
+        if (query == null) {
+            return false;
+        }
+        return hasPrefix(root, query, 0);
+    }
+
+    private boolean hasPrefix(Node x, String key, int d) {
+        if (x == null) {
+            return false;
+        }
+        if (d == key.length()) {
+            return true;
+        }
+        char c = key.charAt(d);
+        if (x.next[c] == null) {
+            return false;
+        }
+        return hasPrefix(x.next[c], key, d + 1);
+    }
+
     public static void main(String[] args) {
         Trie<Integer> st = new Trie<Integer>();
         List<String> l = List.of("she", "sells", "sea", "shells", "by", "the", "sea", "shore");
@@ -180,20 +201,33 @@ public class Trie<Value> {
             }
             StdOut.println();
         }
+//
+//        StdOut.println("longestPrefixOf(\"shellsort\"):");
+//        StdOut.println(st.longestPrefixOf("shellsort"));
+//        StdOut.println();
+//
+//        StdOut.println("longestPrefixOf(\"quicksort\"):");
+//        StdOut.println(st.longestPrefixOf("quicksort"));
+//        StdOut.println();
+//
+//        StdOut.println("keysWithPrefix(\"shor\"):");
+//        for (String s : st.keysWithPrefix("shor")) {
+//            StdOut.println(s);
+//        }
+//        StdOut.println();
 
-        StdOut.println("longestPrefixOf(\"shellsort\"):");
-        StdOut.println(st.longestPrefixOf("shellsort"));
+        StdOut.println("hasPrefixOf(\"se\"):");
+        StdOut.println(st.hasPrefix("se"));
         StdOut.println();
 
-        StdOut.println("longestPrefixOf(\"quicksort\"):");
-        StdOut.println(st.longestPrefixOf("quicksort"));
+        StdOut.println("hasPrefixOf(\"she\"):");
+        StdOut.println(st.hasPrefix("she"));
         StdOut.println();
 
-        StdOut.println("keysWithPrefix(\"shor\"):");
-        for (String s : st.keysWithPrefix("shor")) {
-            StdOut.println(s);
-        }
+        StdOut.println("hasPrefixOf(\"thee\"):");
+        StdOut.println(st.hasPrefix("thee"));
         StdOut.println();
+
 
     }
 }
