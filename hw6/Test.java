@@ -32,7 +32,7 @@ public class Test {
         boolean[][] f = t.clone();
         System.out.println(Arrays.deepToString(f));
 
-        Trie st = new Trie<Integer>();
+        TrieST<Integer> st = new TrieST<Integer>();
         In dict = new In("words.txt");
         String[] dicts = dict.readAllLines();
         for (int i = 0; i < dicts.length; i++) {
@@ -51,6 +51,8 @@ public class Test {
         StdOut.println();
         System.out.println(st.size());
         System.out.println(st.hasPrefix("net"));
+
+        System.out.println((int) 'é');
 
     }
 }

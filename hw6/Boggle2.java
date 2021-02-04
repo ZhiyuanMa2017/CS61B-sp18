@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.TreeSet;
 
 
-public class Boggle {
+public class Boggle2 {
 
     // File path of dictionary file
     static String dictPath = "words.txt";
-    private static Trie trie;
+    private static TrieST trie;
     private static char[][] charBoard;
     private static TreeSet<String> treeSet;
     private static int[] dx = new int[]{-1, -1, 0, 1, 1, 1, 0, -1};
@@ -46,11 +46,11 @@ public class Boggle {
                 charBoard[i][j] = board[i].charAt(j);
             }
         }
-        trie = new Trie();
+        trie = new TrieST();
         In dict = new In(dictPath);
         String[] dicts = dict.readAllLines();
-        for (String s : dicts) {
-            trie.put(s);
+        for (int i = 0; i < dicts.length; i++) {
+            trie.put(dicts[i], i);
         }
 
         boolean[][] marked = new boolean[m][n];
