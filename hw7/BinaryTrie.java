@@ -6,9 +6,8 @@ import java.util.Map;
 
 public class BinaryTrie implements Serializable {
 
-    private Node root;
 
-    private static class Node implements Comparable<Node> {
+    private static class Node implements Comparable<Node>, Serializable {
         private final char ch;
         private final int freq;
         private final Node left, right;
@@ -20,7 +19,7 @@ public class BinaryTrie implements Serializable {
             this.right = right;
         }
 
-        // is the node a leaf node?
+
         private boolean isLeaf() {
             return (left == null) && (right == null);
         }
@@ -31,12 +30,13 @@ public class BinaryTrie implements Serializable {
         }
     }
 
+    private Node root;
+
     public BinaryTrie(Map<Character, Integer> frequencyTable) {
         MinPQ<Node> pq = new MinPQ<>();
-        for (Character character : frequencyTable.keySet()) {
-            pq.insert(new Node(character, frequencyTable.get(character), null, null));
+        for (Character c : frequencyTable.keySet()) {
+            pq.insert(new Node(c, frequencyTable.get(c), null, null));
         }
-
         while (pq.size() > 1) {
             Node left = pq.delMin();
             Node right = pq.delMin();
@@ -52,14 +52,15 @@ public class BinaryTrie implements Serializable {
         int i;
         BitSequence bs = new BitSequence();
         for (i = 0; i < length; i++) {
-            while (!x.isLeaf()) {
-                if (querySequence.bitAt(i) == 1) {
-                    x = x.right;
-                } else {
-                    x = x.left;
-                }
-                bs = bs.appended(querySequence.bitAt(i));
+            if (x.isLeaf()) {
+                break;
             }
+            if (querySequence.bitAt(i) == 1) {
+                x = x.right;
+            } else {
+                x = x.left;
+            }
+            bs = bs.appended(querySequence.bitAt(i));
         }
         return new Match(bs, x.ch);
     }
