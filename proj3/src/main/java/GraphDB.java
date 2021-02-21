@@ -3,10 +3,14 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -18,12 +22,49 @@ import java.util.ArrayList;
  * @author Alan Yao, Josh Hug
  */
 public class GraphDB {
-    /** Your instance variables for storing the graph. You should consider
-     * creating helper classes, e.g. Node, Edge, etc. */
+    /**
+     * Your instance variables for storing the graph. You should consider
+     * creating helper classes, e.g. Node, Edge, etc.
+     */
+    private Map<Long, Node> vertices = new LinkedHashMap<>();
+    private final Map<Long, Edge> edges = new LinkedHashMap<>();
+
+
+    static class Node {
+        long id;
+        double lat;
+        double lon;
+        List<Long> adjNode = new ArrayList<>();
+        String name;
+
+        Node(long id, double lat, double lon) {
+            this.id = id;
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+
+    }
+
+    static class Edge {
+        long id;
+        List<Long> vertexList;
+
+
+        Edge(long id, List<Long> vertexList) {
+            this.id = id;
+            this.vertexList = vertexList;
+        }
+    }
 
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
+     *
      * @param dbPath Path to the XML file to be parsed.
      */
     public GraphDB(String dbPath) {
@@ -44,6 +85,7 @@ public class GraphDB {
 
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
+     *
      * @param s Input string.
      * @return Cleaned string.
      */
@@ -52,36 +94,49 @@ public class GraphDB {
     }
 
     /**
-     *  Remove nodes with no connections from the graph.
-     *  While this does not guarantee that any two nodes in the remaining graph are connected,
-     *  we can reasonably assume this since typically roads are connected.
+     * Remove nodes with no connections from the graph.
+     * While this does not guarantee that any two nodes in the remaining graph are connected,
+     * we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        // TODO: Your code here.
+        Map<Long, Node> aftervertices = new LinkedHashMap<>();
+        for (Node node : vertices.values()) {
+            if (node.adjNode.size() != 0) {
+                aftervertices.put(node.id, node);
+            }
+        }
+        vertices = aftervertices;
     }
 
     /**
      * Returns an iterable of all vertex IDs in the graph.
+     *
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return vertices.keySet();
     }
 
     /**
      * Returns ids of all vertices adjacent to v.
+     *
      * @param v The id of the vertex we are looking adjacent to.
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        List<Long> adjnodes = new ArrayList<>();
+        Node thisnode = vertices.get(v);
+        for (Long aLong : thisnode.adjNode) {
+            adjnodes.add(aLong);
+        }
+        return adjnodes;
     }
 
     /**
      * Returns the great-circle distance between vertices v and w in miles.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
+     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The great-circle distance between the two locations from the graph.
@@ -109,6 +164,7 @@ public class GraphDB {
      * end point.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
+     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The initial bearing between the vertices.
@@ -131,29 +187,72 @@ public class GraphDB {
 
     /**
      * Returns the vertex closest to the given longitude and latitude.
+     *
      * @param lon The target longitude.
      * @param lat The target latitude.
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        double mindis = Double.MAX_VALUE;
+        double curdis;
+        long minid = 0;
+        for (Long id : vertices.keySet()) {
+            curdis = distance(lon, lat, vertices.get(id).lon, vertices.get(id).lat);
+            if (curdis < mindis) {
+                mindis = curdis;
+                minid = id;
+            }
+        }
+        return minid;
     }
 
     /**
      * Gets the longitude of a vertex.
+     *
      * @param v The id of the vertex.
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        if (vertices.containsKey(v)) {
+            return vertices.get(v).lon;
+        } else {
+            return 0;
+        }
     }
 
     /**
      * Gets the latitude of a vertex.
+     *
      * @param v The id of the vertex.
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        if (vertices.containsKey(v)) {
+            return vertices.get(v).lat;
+        } else {
+            return 0;
+        }
     }
+
+    void addNode(long id, double lat, double lon) {
+        vertices.put(id, new Node(id, lat, lon));
+    }
+
+
+    void addEdge(long id, List<Long> vertexList) {
+        edges.put(id, new Edge(id, vertexList));
+        for (int i = 0; i < vertexList.size() - 1; i++) {
+            long firstid = vertexList.get(i);
+            long secondid = vertexList.get(i + 1);
+            Node firstnode = vertices.get(firstid);
+            Node secondnode = vertices.get(secondid);
+            firstnode.adjNode.add(secondid);
+            secondnode.adjNode.add(firstid);
+        }
+    }
+
+    void setNodename(long id, String name) {
+        vertices.get(id).setName(name);
+    }
+
 }
