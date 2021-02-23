@@ -46,6 +46,7 @@ public class GraphBuildingHandler extends DefaultHandler {
     private boolean flag = false;
     private long lastnodeid;
     private long lastwayid;
+    private String lastwayname;
 
     /**
      * Create a new GraphBuildingHandler.
@@ -123,7 +124,8 @@ public class GraphBuildingHandler extends DefaultHandler {
                 /* Figure out whether this way and its connections are valid. */
                 /* Hint: Setting a "flag" is good enough! */
             } else if (k.equals("name")) {
-                System.out.println("Way Name: " + v);
+//                System.out.println("Way Name: " + v);
+                lastwayname = v;
             }
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
@@ -160,15 +162,18 @@ public class GraphBuildingHandler extends DefaultHandler {
 
             if (flag) {
                 g.addEdge(lastwayid, possibleconnections);
+                g.setWayname(lastwayid, lastwayname);
                 flag = false;
                 possibleconnections = new ArrayList<>();
                 lastnodeid = 0;
                 lastwayid = 0;
+                lastwayname = "";
                 activeState = "";
             } else {
                 possibleconnections = new ArrayList<>();
                 lastnodeid = 0;
                 lastwayid = 0;
+                lastwayname = "";
                 activeState = "";
             }
         }

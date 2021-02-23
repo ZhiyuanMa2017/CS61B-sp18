@@ -3,10 +3,10 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -26,8 +26,9 @@ public class GraphDB {
      * Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc.
      */
-    private Map<Long, Node> vertices = new LinkedHashMap<>();
+    Map<Long, Node> vertices = new LinkedHashMap<>();
     private final Map<Long, Edge> edges = new LinkedHashMap<>();
+    private final Map<String, Long> path = new LinkedHashMap<>();
 
 
     static class Node {
@@ -53,11 +54,16 @@ public class GraphDB {
     static class Edge {
         long id;
         List<Long> vertexList;
+        String name;
 
 
         Edge(long id, List<Long> vertexList) {
             this.id = id;
             this.vertexList = vertexList;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
 
@@ -248,11 +254,36 @@ public class GraphDB {
             Node secondnode = vertices.get(secondid);
             firstnode.adjNode.add(secondid);
             secondnode.adjNode.add(firstid);
+            path.put(firstid + "to" + secondid, id);
+            path.put(secondid + "to" + firstid, id);
         }
     }
 
     void setNodename(long id, String name) {
         vertices.get(id).setName(name);
     }
+
+    void setWayname(long id, String name) {
+        edges.get(id).setName(name);
+    }
+
+    Long findWayid(Long v, Long w) {
+        String name1 = v + "to" + w;
+        if (path.containsKey(name1)) {
+            return path.get(name1);
+        } else {
+            return (long) -1;
+        }
+    }
+
+    String getWayname(Long id) {
+        if (edges.containsKey(id)) {
+            if (edges.get(id).name != null) {
+                return edges.get(id).name;
+            }
+        }
+        return Router.NavigationDirection.UNKNOWN_ROAD;
+    }
+
 
 }
