@@ -291,11 +291,11 @@ public class GraphDB {
         return Router.NavigationDirection.UNKNOWN_ROAD;
     }
 
-    List<String> getnodenamesByPrefix(String prefix) {
+    List<String> getLocationsByPrefix(String prefix) {
         return trie.keysWithPrefix(prefix);
     }
 
-    List<Map<String, Object>> getlocations(String name) {
+    List<Map<String, Object>> getLocations(String name) {
         List<Map<String, Object>> res = new ArrayList<>();
         String key = cleanString(name);
         if (trie.contains(key)) {
