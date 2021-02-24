@@ -44,6 +44,13 @@ public class Rasterer {
         System.out.println(params);
         Map<String, Object> results = new HashMap<>();
 
+        results.put("render_grid", null);
+        results.put("raster_ul_lon", null);
+        results.put("raster_ul_lat", null);
+        results.put("raster_lr_lon", null);
+        results.put("raster_lr_lat", null);
+        results.put("depth", null);
+
         double lrlon = params.get("lrlon");
         double ullon = params.get("ullon");
         double width = params.get("w");
@@ -77,9 +84,13 @@ public class Rasterer {
         int y1 = (int) ((MapServer.ROOT_ULLAT - ullat) / (d0LatDPP * MapServer.TILE_SIZE));
         int y2 = (int) ((MapServer.ROOT_ULLAT - lrlat) / (d0LatDPP * MapServer.TILE_SIZE));
 
+        int maxxy = (int) Math.pow(2, depth);
+        x2 = x2 >= maxxy ? maxxy - 1 : x2;
+        y2 = y2 >= maxxy ? maxxy - 1 : y2;
+
         String[][] rendergrid = new String[y2 - y1 + 1][x2 - x1 + 1];
-        for (int i = 0; i < y2 - y1 + 1; i++) {
-            for (int j = 0; j < x2 - x1 + 1; j++) {
+        for (int i = 0; i < y2 - y1 + 1 && i + y1 < Math.pow(2, depth); i++) {
+            for (int j = 0; j < x2 - x1 + 1 && j + x1 < Math.pow(2, depth); j++) {
                 rendergrid[i][j] = "d" + depth + "_x" + (j + x1) + "_y" + (i + y1) + ".png";
             }
         }

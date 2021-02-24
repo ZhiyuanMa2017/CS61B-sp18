@@ -29,7 +29,7 @@ public class GraphDB {
     Map<Long, Node> vertices = new LinkedHashMap<>();
     private final Map<Long, Edge> edges = new LinkedHashMap<>();
     private final Map<String, Long> path = new LinkedHashMap<>();
-
+    private Trie trie = new Trie();
 
     static class Node {
         long id;
@@ -261,6 +261,8 @@ public class GraphDB {
 
     void setNodename(long id, String name) {
         vertices.get(id).setName(name);
+        trie.put(id, name, vertices.get(id).lat, vertices.get(id).lon);
+
     }
 
     void setWayname(long id, String name) {
@@ -283,6 +285,21 @@ public class GraphDB {
             }
         }
         return Router.NavigationDirection.UNKNOWN_ROAD;
+    }
+
+    List<String> getnodenamesByPrefix(String prefix) {
+        List<String> res = new ArrayList<>();
+        res = trie.keysWithPrefix(prefix);
+        return res;
+    }
+
+    List<Map<String, Object>> getlocations(String name) {
+        List<Map<String, Object>> res = new ArrayList<>();
+        String key = cleanString(name);
+        if (trie.contains(key)) {
+            res = trie.getnodeinfo(key);
+        }
+        return res;
     }
 
 
