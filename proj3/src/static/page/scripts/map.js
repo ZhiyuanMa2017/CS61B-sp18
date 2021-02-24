@@ -326,7 +326,7 @@ $(function() {
     /* Make search bar do autocomplete things */
     $('#tags').autocomplete({
           source: search,
-          minLength: 2,
+          minLength: 1,
           select: function (event, ui) {
               $.get({
                   async: true,
