@@ -119,6 +119,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             String k = attributes.getValue("k");
             String v = attributes.getValue("v");
             if (k.equals("maxspeed")) {
+                int iiii = 0;
 //                System.out.println("Max Speed: " + v);
 
                 /* set the max speed of the "current way" here. */
