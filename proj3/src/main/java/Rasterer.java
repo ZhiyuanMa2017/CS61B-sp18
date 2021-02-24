@@ -58,13 +58,9 @@ public class Rasterer {
         double ullat = params.get("ullat");
         double lrlat = params.get("lrlat");
 
-        if (ullon > lrlon || ullat < lrlat || width <= 0 || height <= 0) {
-            results.put("query_success", false);
-            return results;
-        }
 
-        if (lrlon > MapServer.ROOT_LRLON || ullon < MapServer.ROOT_ULLON
-                || ullat > MapServer.ROOT_ULLAT || lrlat < MapServer.ROOT_LRLAT) {
+        if (lrlon > MapServer.ROOT_LRLON + 0.01 || ullon + 0.01 < MapServer.ROOT_ULLON
+                || ullat > MapServer.ROOT_ULLAT + 0.01 || lrlat + 0.01 < MapServer.ROOT_LRLAT) {
             results.put("query_success", false);
             return results;
         }
