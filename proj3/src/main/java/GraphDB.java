@@ -3,14 +3,15 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
+import java.util.Set;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -22,59 +23,73 @@ import javax.xml.parsers.SAXParserFactory;
  * @author Alan Yao, Josh Hug
  */
 public class GraphDB {
-    /**
-     * Your instance variables for storing the graph. You should consider
-     * creating helper classes, e.g. Node, Edge, etc.
-     */
-    Map<Long, Node> vertices = new LinkedHashMap<>();
-    private final Map<Long, Edge> edges = new LinkedHashMap<>();
-    private final Map<String, Long> path = new LinkedHashMap<>();
-    private Trie trie = new Trie();
+    /** Your instance variables for storing the graph. You should consider
+     * creating helper classes, e.g. Node, Edge, etc. */
 
-    static class Node {
-        long id;
-        double lat;
-        double lon;
-        List<Long> adjNode = new ArrayList<>();
-        String name;
+    protected static class Node {  // protected for the use of GraphBuildingHandler
+        private long id;
+        private double lon;
+        private double lat;
+        private String name;
 
-        Node(long id, double lat, double lon) {
+        Set<String> wayNames;
+
+        private Node(long id, double lat, double lon) {
             this.id = id;
             this.lat = lat;
             this.lon = lon;
+            wayNames = new HashSet<>();
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public static Node of(long id, double lat, double lon) {
+            return new Node(id, lat, lon);
         }
 
-        public long getId() {
+        public long id() {
             return id;
         }
 
+        public double lat() {
+            return lat;
+        }
 
-    }
+        public double lon() {
+            return lon;
+        }
 
-    static class Edge {
-        long id;
-        List<Long> vertexList;
-        String name;
-
-
-        Edge(long id, List<Long> vertexList) {
-            this.id = id;
-            this.vertexList = vertexList;
+        public String getName() {
+            return name;
         }
 
         public void setName(String name) {
             this.name = name;
         }
     }
+
+    private static class Edge {
+        private long fromID;
+        private long toID;
+        private double weight;
+        private String name;
+
+        protected Edge(long fromID, long toID, String name) {
+            this.fromID = fromID;
+            this.toID = toID;
+            this.name = name;
+        }
+
+        public String name() {
+            return name;
+        }
+    }
+
+    Map<Long, Node> vertex = new HashMap<>();
+    Map<Long, Set<Edge>> adj = new HashMap<>(); // node id -> neighbor edges
+    private static Trie trie = new Trie();
 
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
-     *
      * @param dbPath Path to the XML file to be parsed.
      */
     public GraphDB(String dbPath) {
@@ -95,7 +110,6 @@ public class GraphDB {
 
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
-     *
      * @param s Input string.
      * @return Cleaned string.
      */
@@ -104,49 +118,51 @@ public class GraphDB {
     }
 
     /**
-     * Remove nodes with no connections from the graph.
-     * While this does not guarantee that any two nodes in the remaining graph are connected,
-     * we can reasonably assume this since typically roads are connected.
+     *  Remove nodes with no connections from the graph.
+     *  While this does not guarantee that any two nodes in the remaining graph are connected,
+     *  we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        Map<Long, Node> aftervertices = new LinkedHashMap<>();
-        for (Node node : vertices.values()) {
-            if (node.adjNode.size() != 0) {
-                aftervertices.put(node.id, node);
+        // cannot iterate through and modify simultaneously
+        List<Long> toRemove = new ArrayList<>();
+        for (long id : vertex.keySet()) {
+            if (adj.get(id).size() == 0) {
+                toRemove.add(id);
             }
         }
-        vertices = aftervertices;
+
+        for (long id : toRemove) {
+            vertex.remove(id);
+            adj.remove(id);
+        }
     }
 
     /**
      * Returns an iterable of all vertex IDs in the graph.
-     *
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        return vertices.keySet();
+        return vertex.keySet();
     }
 
     /**
      * Returns ids of all vertices adjacent to v.
-     *
      * @param v The id of the vertex we are looking adjacent to.
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        List<Long> adjnodes = new ArrayList<>();
-        Node thisnode = vertices.get(v);
-        for (Long aLong : thisnode.adjNode) {
-            adjnodes.add(aLong);
+        List<Long> adjVertex = new ArrayList<>();
+        Set<Edge> edges = adj.get(v);
+        for (Edge edge : edges) {
+            adjVertex.add(edge.toID);
         }
-        return adjnodes;
+        return adjVertex;
     }
 
     /**
      * Returns the great-circle distance between vertices v and w in miles.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
-     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The great-circle distance between the two locations from the graph.
@@ -174,16 +190,15 @@ public class GraphDB {
      * end point.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
-     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The initial bearing between the vertices.
      */
-    double bearing(long v, long w) {
+    public double bearing(long v, long w) {
         return bearing(lon(v), lat(v), lon(w), lat(w));
     }
 
-    static double bearing(double lonV, double latV, double lonW, double latW) {
+    public static double bearing(double lonV, double latV, double lonW, double latW) {
         double phi1 = Math.toRadians(latV);
         double phi2 = Math.toRadians(latW);
         double lambda1 = Math.toRadians(lonV);
@@ -197,112 +212,126 @@ public class GraphDB {
 
     /**
      * Returns the vertex closest to the given longitude and latitude.
-     *
      * @param lon The target longitude.
      * @param lat The target latitude.
-     * @return The id of the node in the graph closest to the target.
+     * @return The id of the node in the graph closest to the target. O(lgn)
      */
     long closest(double lon, double lat) {
-        double mindis = Double.MAX_VALUE;
-        double curdis;
-        long minid = 0;
-        for (Long id : vertices.keySet()) {
-            curdis = distance(lon, lat, vertices.get(id).lon, vertices.get(id).lat);
-            if (curdis < mindis) {
-                mindis = curdis;
-                minid = id;
+        double minDis = Double.MAX_VALUE;
+        long cloestID = 0;
+        for (Node node : vertex.values()) {
+            double curDis = distance(node.lon, node.lat, lon, lat);
+            if (curDis < minDis) {
+                minDis = curDis;
+                cloestID = node.id;
             }
         }
-        return minid;
+        return cloestID;
     }
 
     /**
      * Gets the longitude of a vertex.
-     *
      * @param v The id of the vertex.
      * @return The longitude of the vertex.
      */
-    double lon(long v) {
-        if (vertices.containsKey(v)) {
-            return vertices.get(v).lon;
-        } else {
-            return 0;
+    public double lon(long v) {
+        if (!vertex.containsKey(v)) {
+            return 0.0;
         }
+        return vertex.get(v).lon;
     }
 
     /**
      * Gets the latitude of a vertex.
-     *
      * @param v The id of the vertex.
      * @return The latitude of the vertex.
      */
-    double lat(long v) {
-        if (vertices.containsKey(v)) {
-            return vertices.get(v).lat;
-        } else {
-            return 0;
+    public double lat(long v) {
+        if (!vertex.containsKey(v)) {
+            return 0.0;
+        }
+        return vertex.get(v).lat;
+    }
+
+    public void addNode(Node v) {
+        if (!vertex.containsKey(v.id())) {
+            vertex.put(v.id(), v);
+            adj.put(v.id(), new HashSet<>());
         }
     }
 
-    void addNode(long id, double lat, double lon) {
-        vertices.put(id, new Node(id, lat, lon));
-    }
-
-
-    void addEdge(long id, List<Long> vertexList) {
-        edges.put(id, new Edge(id, vertexList));
-        for (int i = 0; i < vertexList.size() - 1; i++) {
-            long firstid = vertexList.get(i);
-            long secondid = vertexList.get(i + 1);
-            Node firstnode = vertices.get(firstid);
-            Node secondnode = vertices.get(secondid);
-            firstnode.adjNode.add(secondid);
-            secondnode.adjNode.add(firstid);
-            path.put(firstid + "to" + secondid, id);
-            path.put(secondid + "to" + firstid, id);
+  /*  public Set<String> getWayNames(long v) {
+        Set<String> wayNames = new HashSet<>();
+        for (Edge e : adj.get(v)) {
+            wayNames.add(e.name);
         }
-    }
+        return wayNames;
+    }*/
 
-    void setNodename(long id, String name) {
-        vertices.get(id).setName(name);
-        trie.put(id, name, vertices.get(id).lat, vertices.get(id).lon);
-
-    }
-
-    void setWayname(long id, String name) {
-        edges.get(id).setName(name);
-    }
-
-    Long findWayid(Long v, Long w) {
-        String name1 = v + "to" + w;
-        if (path.containsKey(name1)) {
-            return path.get(name1);
-        } else {
-            return (long) -1;
-        }
-    }
-
-    String getWayname(Long id) {
-        if (edges.containsKey(id)) {
-            if (edges.get(id).name != null) {
-                return edges.get(id).name;
+    public ArrayList<String> getWayNames(long v) {
+        ArrayList<String> wayNames = new ArrayList<>();
+        for (Edge e : adj.get(v)) {
+            if (e.name() == null) {
+                wayNames.add(Router.NavigationDirection.UNKNOWN_ROAD);
+            }
+            else {
+                wayNames.add(e.name());
             }
         }
-        return Router.NavigationDirection.UNKNOWN_ROAD;
+        return wayNames;
     }
 
-    List<String> getLocationsByPrefix(String prefix) {
-        return trie.keysWithPrefix(prefix);
-    }
+    public void addEdge(long fromID, long toID, String name) {
+        if (vertex.containsKey(fromID) && vertex.containsKey(toID)) {
+            Edge edge = new Edge(fromID, toID, name);
+            edge.weight = distance(fromID, toID);
 
-    List<Map<String, Object>> getLocations(String name) {
-        List<Map<String, Object>> res = new ArrayList<>();
-        String key = cleanString(name);
-        if (trie.contains(key)) {
-            res = trie.getnodeinfo(key);
+            Set<Edge> edges = adj.get(fromID);
+            edges.add(edge);
+            adj.put(fromID, edges);
         }
-        return res;
     }
 
+    void addNameToTrie(String name, long id, double lat, double lon) {
+        trie.insert(name, id, lat, lon);
+    }
 
+    public List<String> getLocationsByPrefix(String prefix) {
+        List<String> locations = new ArrayList<>();
+        // do not need to iterate all the node, just go through the trie, O(k)
+        Trie.TrieNode node = trie.startsWith(cleanString(prefix));
+        if (node == null) {
+            return locations;
+        }
+        else {
+            dfs(node, prefix, "", locations);
+        }
+
+        return locations;
+    }
+
+    public static void dfs(Trie.TrieNode node, String prefix, String cur, List<String> ans) {
+        if (node.isWord) {
+            for (Map<String, Object> m : node.extraInfo) {
+                ans.add((String) m.get("name"));
+            }
+        }
+        if (node.children.isEmpty()) {
+            return;
+        }
+
+        for (Map.Entry<Character, Trie.TrieNode> entry : node.children.entrySet()) {
+            dfs(entry.getValue(), prefix, cur + entry.getKey(), ans);
+        }
+    }
+
+    public List<Map<String, Object>> getLocations(String locationName) {
+        // O(k) do not iterate all the node
+        List<Map<String, Object>> ans = new ArrayList<>();
+        locationName = cleanString(locationName);
+        if (trie.search(locationName)) {
+            return trie.startsWith(locationName).extraInfo;
+        }
+        return ans;
+    }
 }

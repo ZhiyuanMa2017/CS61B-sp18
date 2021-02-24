@@ -4,12 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -26,7 +21,6 @@ import static spark.Spark.*;
  * requested images and routes. You should not need to modify this file unless you're
  * doing the Autocomplete part of the project, though you are welcome to do so.
  * This code is using BearMaps skeleton code version 2.0.
- *
  * @author Alan Yao, Josh Hug
  */
 public class MapServer {
@@ -37,25 +31,15 @@ public class MapServer {
      */
     public static final double ROOT_ULLAT = 37.892195547244356, ROOT_ULLON = -122.2998046875,
             ROOT_LRLAT = 37.82280243352756, ROOT_LRLON = -122.2119140625;
-    /**
-     * Each tile is 256x256 pixels.
-     */
+    /** Each tile is 256x256 pixels. */
     public static final int TILE_SIZE = 256;
-    /**
-     * HTTP failed response.
-     */
+    /** HTTP failed response. */
     private static final int HALT_RESPONSE = 403;
-    /**
-     * Route stroke information: typically roads are not more than 5px wide.
-     */
+    /** Route stroke information: typically roads are not more than 5px wide. */
     public static final float ROUTE_STROKE_WIDTH_PX = 5.0f;
-    /**
-     * Route stroke information: Cyan with half transparency.
-     */
+    /** Route stroke information: Cyan with half transparency. */
     public static final Color ROUTE_STROKE_COLOR = new Color(108, 181, 230, 200);
-    /**
-     * The tile images are in the IMG_ROOT folder.
-     */
+    /** The tile images are in the IMG_ROOT folder. */
     private static final String IMG_ROOT = "../library-sp18/data/proj3_imgs/";
     /**
      * The OSM XML file path. Downloaded from <a href="http://download.bbbike.org/osm/">here</a>
@@ -70,8 +54,8 @@ public class MapServer {
      * lrlat : lower right corner latitude,<br> lrlon : lower right corner longitude <br>
      * w : user viewport window width in pixels,<br> h : user viewport height in pixels.
      **/
-    private static final String[] REQUIRED_RASTER_REQUEST_PARAMS = {"ullat", "ullon",
-            "lrlat", "lrlon", "w", "h"};
+    private static final String[] REQUIRED_RASTER_REQUEST_PARAMS = {"ullat", "ullon", "lrlat",
+        "lrlon", "w", "h"};
     /**
      * Each route request to the server will have the following parameters
      * as keys in the params map.<br>
@@ -79,20 +63,20 @@ public class MapServer {
      * end_lat : end point latitude, <br>end_lon : end point longitude.
      **/
     private static final String[] REQUIRED_ROUTE_REQUEST_PARAMS = {"start_lat", "start_lon",
-            "end_lat", "end_lon"};
+        "end_lat", "end_lon"};
 
     /**
      * The result of rastering must be a map containing all of the
      * fields listed in the comments for getMapRaster in Rasterer.java.
      **/
     private static final String[] REQUIRED_RASTER_RESULT_PARAMS = {"render_grid", "raster_ul_lon",
-            "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
+        "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
 
     private static Rasterer rasterer;
     private static GraphDB graph;
     private static List<Long> route = new LinkedList<>();
-    /* Define any static variables here. Do not define any instance variables of MapServer. */
 
+    /* Define any static variables here. Do not define any instance variables of MapServer. */
 
     /**
      * Place any initialization statements that will be run before the server main loop here.
@@ -100,8 +84,18 @@ public class MapServer {
      * This is for testing purposes, and you may fail tests otherwise.
      **/
     public static void initialize() {
+        port(getHerokuAssignedPort());
+
         graph = new GraphDB(OSM_DB_PATH);
         rasterer = new Rasterer();
+    }
+
+    private static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4567; // return default port if heroku-port isn't set (i.e. on localhost)
     }
 
     public static void main(String[] args) {
@@ -118,6 +112,7 @@ public class MapServer {
         /* Define the raster endpoint for HTTP GET requests. I use anonymous functions to define
          * the request handlers. */
         get("/raster", (req, res) -> {
+
             HashMap<String, Double> params =
                     getRequestParams(req, REQUIRED_RASTER_REQUEST_PARAMS);
             /* The png image is written to the ByteArrayOutputStream */
@@ -137,6 +132,7 @@ public class MapServer {
             Gson gson = new Gson();
             return gson.toJson(rasteredImgParams);
         });
+
 
         /* Define the routing endpoint for HTTP GET requests. */
         get("/route", (req, res) -> {
@@ -185,8 +181,7 @@ public class MapServer {
     /**
      * Validate & return a parameter map of the required request parameters.
      * Requires that all input parameters are doubles.
-     *
-     * @param req            HTTP Request.
+     * @param req HTTP Request.
      * @param requiredParams TestParams to validate.
      * @return A populated map of input parameter to it's numerical value.
      */
@@ -251,9 +246,9 @@ public class MapServer {
                     BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             route.stream().reduce((v, w) -> {
                 g2d.drawLine((int) ((graph.lon(v) - ullon) * (1 / wdpp)),
-                        (int) ((ullat - graph.lat(v)) * (1 / hdpp)),
-                        (int) ((graph.lon(w) - ullon) * (1 / wdpp)),
-                        (int) ((ullat - graph.lat(w)) * (1 / hdpp)));
+                             (int) ((ullat - graph.lat(v)) * (1 / hdpp)),
+                             (int) ((graph.lon(w) - ullon) * (1 / wdpp)),
+                             (int) ((ullat - graph.lat(w)) * (1 / hdpp)));
                 return w;
             });
         }
@@ -291,8 +286,7 @@ public class MapServer {
 
     /**
      * In linear time, collect all the names of OSM locations that prefix-match the query string.
-     *
-     * @param prefix Prefix string to be searched for. Could be any case, with our without
+     * @param prefix Prefix string to be searched for. Could be any case, with or without
      *               punctuation.
      * @return A <code>List</code> of the full names of locations whose cleaned name matches the
      * cleaned <code>prefix</code>.
@@ -304,7 +298,6 @@ public class MapServer {
     /**
      * Collect all locations that match a cleaned <code>locationName</code>, and return
      * information about each node that matches.
-     *
      * @param locationName A full name of a location searched for.
      * @return A list of locations whose cleaned name matches the
      * cleaned <code>locationName</code>, and each location is a map of parameters for the Json
@@ -315,25 +308,26 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
+        // O(k) do not iterate all the node
         return graph.getLocations(locationName);
     }
 
     /**
      * Validates that Rasterer has returned a result that can be rendered.
-     *
      * @param rip : Parameters provided by the rasterer
      */
     private static boolean validateRasteredImgParams(Map<String, Object> rip) {
-        for (String p : REQUIRED_RASTER_RESULT_PARAMS) {
-            if (!rip.containsKey(p)) {
-                System.out.println("Your rastering result is missing the " + p + " field.");
-                return false;
-            }
-        }
         if (rip.containsKey("query_success")) {
             boolean success = (boolean) rip.get("query_success");
             if (!success) {
                 System.out.println("query_success was reported as a failure");
+                return false;
+            }
+        }
+
+        for (String p : REQUIRED_RASTER_RESULT_PARAMS) {
+            if (!rip.containsKey(p)) {
+                System.out.println("Your rastering result is missing the " + p + " field.");
                 return false;
             }
         }
@@ -351,7 +345,7 @@ public class MapServer {
         }
         StringBuilder sb = new StringBuilder();
         int step = 1;
-        for (Router.NavigationDirection d : directions) {
+        for (Router.NavigationDirection d: directions) {
             sb.append(String.format("%d. %s <br>", step, d));
             step += 1;
         }
