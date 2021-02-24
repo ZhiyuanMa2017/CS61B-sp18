@@ -48,6 +48,10 @@ public class GraphDB {
             this.name = name;
         }
 
+        public long getId() {
+            return id;
+        }
+
 
     }
 
@@ -288,9 +292,7 @@ public class GraphDB {
     }
 
     List<String> getnodenamesByPrefix(String prefix) {
-        List<String> res = new ArrayList<>();
-        res = trie.keysWithPrefix(prefix);
-        return res;
+        return trie.keysWithPrefix(prefix);
     }
 
     List<Map<String, Object>> getlocations(String name) {

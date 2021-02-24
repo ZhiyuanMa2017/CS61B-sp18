@@ -29,9 +29,6 @@ public class Trie {
             return null;
         }
         Node x = get(root, key, 0);
-        if (x == null) {
-            return null;
-        }
         return x;
     }
 

@@ -1,14 +1,13 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
-import java.util.HashSet;
 
 public class Solver {
 
     private HashMap<Long, Double> estimatedmap = new HashMap<>();
     private Stack<Long> path;
-    private Set<Long> marked;
 
     public class SearchNode implements Comparable<SearchNode> {
 
@@ -21,6 +20,23 @@ public class Solver {
         public int compareTo(SearchNode o) {
             return Double.compare((this.movessofar + this.estimatedD),
                     (o.movessofar + o.estimatedD));
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            SearchNode that = (SearchNode) o;
+            return this.node.getId() == that.node.getId();
+        }
+
+        @Override
+        public int hashCode() {
+            return (int) node.getId();
         }
 
         public SearchNode(GraphDB.Node node, double sofar, SearchNode pre, GraphDB.Node goal) {
@@ -40,7 +56,7 @@ public class Solver {
     public Solver(GraphDB g, GraphDB.Node start, GraphDB.Node goal) {
         SearchNode searchNode = new SearchNode(start, 0, null, goal);
         PriorityQueue<SearchNode> priorityQueue = new PriorityQueue<>();
-        marked = new HashSet<>();
+        Set<Long> marked = new HashSet<>();
         priorityQueue.add(searchNode);
         while (!priorityQueue.isEmpty()) {
             searchNode = priorityQueue.poll();
