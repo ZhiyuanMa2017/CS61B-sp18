@@ -8,39 +8,28 @@ import java.util.Map;
  * not draw the output correctly.
  */
 public class Rasterer {
-    private static final double EPS = 0.01;
-
-    /** Depth 0's image's LonDPP */
-    private double tile0LonDPP;
-    private double tile0LatDPP;
-
-    /** The depth of image we should use. */
-    private int depth;
 
     public Rasterer() {
-        tile0LonDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE;
-        tile0LatDPP = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / MapServer.TILE_SIZE;
-        depth = 0;
+
     }
 
     /**
      * Takes a user query and finds the grid of images that best matches the query. These
      * images will be combined into one big image (rastered) by the front end. <br>
-     *
-     *     The grid of images must obey the following properties, where image in the
-     *     grid is referred to as a "tile".
-     *     <ul>
-     *         <li>The tiles collected must cover the most longitudinal distance per pixel
-     *         (LonDPP) possible, while still covering less than or equal to the amount of
-     *         longitudinal distance per pixel in the query box for the user viewport size. </li>
-     *         <li>Contains all tiles that intersect the query bounding box that fulfill the
-     *         above condition.</li>
-     *         <li>The tiles must be arranged in-order to reconstruct the full image.</li>
-     *     </ul>
+     * <p>
+     * The grid of images must obey the following properties, where image in the
+     * is referred to as a "tile".
+     * <ul>
+     *     <li>The tiles collected must cover the most longitudinal distance per pixel
+     *     (LonDPP) possible, while still covering less than or equal to the amount of
+     *     longitudinal distance per pixel in the query box for the user viewport size. </li>
+     *     <li>Contains all tiles that intersect the query bounding box that fulfill the
+     *     above condition.</li>
+     *     <li>The tiles must be arranged in-order to reconstruct the full image.</li>
+     * </ul>
      *
      * @param params Map of the HTTP GET request's query parameters - the query box and
      *               the user viewport width and height.
-     *
      * @return A map of results for the front end as specified: <br>
      * "render_grid"   : String[][], the files to display. <br>
      * "raster_ul_lon" : Number, the bounding upper left longitude of the rastered image. <br>
@@ -49,60 +38,90 @@ public class Rasterer {
      * "raster_lr_lat" : Number, the bounding lower right latitude of the rastered image. <br>
      * "depth"         : Number, the depth of the nodes of the rastered image <br>
      * "query_success" : Boolean, whether the query was able to successfully complete; don't
-     *                    forget to set this to true on success! <br>
+     * forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-
+        System.out.println(params);
         Map<String, Object> results = new HashMap<>();
 
-        if (params.get("ullon") + EPS < MapServer.ROOT_ULLON || params.get("ullat") > MapServer.ROOT_ULLAT + EPS
-                || params.get("lrlon") > MapServer.ROOT_LRLON + EPS
-                || params.get("lrlat") + EPS < MapServer.ROOT_LRLAT) {
+        results.put("render_grid", null);
+        results.put("raster_ul_lon", null);
+        results.put("raster_ul_lat", null);
+        results.put("raster_lr_lon", null);
+        results.put("raster_lr_lat", null);
+        results.put("depth", null);
+
+        double lrlon = params.get("lrlon");
+        double ullon = params.get("ullon");
+        double width = params.get("w");
+        double height = params.get("h");
+        double ullat = params.get("ullat");
+        double lrlat = params.get("lrlat");
+
+        if (ullon > lrlon || ullat < lrlat || width <= 0 || height <= 0) {
             results.put("query_success", false);
             return results;
         }
 
-        double queryLonDPP = (params.get("lrlon") - params.get("ullon")) / params.get("w");
-        double tileiLonDPP = tile0LonDPP;
-        double tileiLatDPP = tile0LatDPP;
-        for (depth = 0; depth < 7 && tileiLonDPP > queryLonDPP; ++depth) {
-            tileiLonDPP /= 2.0;
-            tileiLatDPP /= 2.0;
+        if (lrlon > MapServer.ROOT_LRLON || ullon < MapServer.ROOT_ULLON
+                || ullat > MapServer.ROOT_ULLAT || lrlat < MapServer.ROOT_LRLAT) {
+            results.put("query_success", false);
+            return results;
+        }
+        double d0LonDPP = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE;
+        double d0LatDPP = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / MapServer.TILE_SIZE;
+        int depth;
+
+        double queryLonDPP = (lrlon - ullon) / width;
+
+        for (depth = 0; depth < 7 && d0LonDPP > queryLonDPP; depth++) {
+            d0LonDPP /= 2.0;
+            d0LatDPP /= 2.0;
         }
 
-        int startX = (int) ((params.get("ullon") - MapServer.ROOT_ULLON)
-                / (tileiLonDPP * MapServer.TILE_SIZE));
-        int endX = (int) ((params.get("lrlon") - MapServer.ROOT_ULLON)
-                / (tileiLonDPP * MapServer.TILE_SIZE));
-        int startY = (int) ((MapServer.ROOT_ULLAT - params.get("ullat"))
-                / (tileiLatDPP * MapServer.TILE_SIZE));
-        int endY = (int) ((MapServer.ROOT_ULLAT - params.get("lrlat"))
-                / (tileiLatDPP * MapServer.TILE_SIZE));
+        int x1 = (int) ((ullon - MapServer.ROOT_ULLON) / (d0LonDPP * MapServer.TILE_SIZE));
+        int x2 = (int) ((lrlon - MapServer.ROOT_ULLON) / (d0LonDPP * MapServer.TILE_SIZE));
+        int y1 = (int) ((MapServer.ROOT_ULLAT - ullat) / (d0LatDPP * MapServer.TILE_SIZE));
+        int y2 = (int) ((MapServer.ROOT_ULLAT - lrlat) / (d0LatDPP * MapServer.TILE_SIZE));
 
-        int maxXY = (int) Math.pow(2, depth);
-        endX = endX >= maxXY ? maxXY - 1 : endX;
-        endY = endY >= maxXY ? maxXY - 1 : endY;
+        int maxxy = (int) Math.pow(2, depth);
+        x2 = x2 >= maxxy ? maxxy - 1 : x2;
+        y2 = y2 >= maxxy ? maxxy - 1 : y2;
 
-        String[][] renderGrid = new String[endY - startY + 1][endX - startX + 1];
-
-        for (int i = 0; i <= endY - startY && i + startY < Math.pow(2, depth); ++i) {
-            for (int j = 0; j <= endX - startX && j + startX < Math.pow(2, depth); ++j) {
-                renderGrid[i][j] = "d" + depth + "_x" + (j + startX) + "_y" + (i + startY) + ".png";
+        String[][] rendergrid = new String[y2 - y1 + 1][x2 - x1 + 1];
+        for (int i = 0; i < y2 - y1 + 1 && i + y1 < Math.pow(2, depth); i++) {
+            for (int j = 0; j < x2 - x1 + 1 && j + x1 < Math.pow(2, depth); j++) {
+                rendergrid[i][j] = "d" + depth + "_x" + (j + x1) + "_y" + (i + y1) + ".png";
             }
         }
 
-        results.put("render_grid", renderGrid);
-        results.put("raster_ul_lon", MapServer.ROOT_ULLON
-                + startX * (tileiLonDPP * MapServer.TILE_SIZE));
-        results.put("raster_ul_lat", MapServer.ROOT_ULLAT
-                - startY * (tileiLatDPP * MapServer.TILE_SIZE));
-        results.put("raster_lr_lon", MapServer.ROOT_ULLON
-                + (endX + 1) * (tileiLonDPP * MapServer.TILE_SIZE));
-        results.put("raster_lr_lat", MapServer.ROOT_ULLAT
-                - (endY + 1) * (tileiLatDPP * MapServer.TILE_SIZE));
+        results.put("render_grid", rendergrid);
+        results.put("raster_ul_lon", MapServer.ROOT_ULLON + x1 * (d0LonDPP * MapServer.TILE_SIZE));
+        results.put("raster_ul_lat", MapServer.ROOT_ULLAT - y1 * (d0LatDPP * MapServer.TILE_SIZE));
+        results.put("raster_lr_lon",
+                MapServer.ROOT_ULLON + (x2 + 1) * (d0LonDPP * MapServer.TILE_SIZE));
+        results.put("raster_lr_lat",
+                MapServer.ROOT_ULLAT - (y2 + 1) * (d0LatDPP * MapServer.TILE_SIZE));
         results.put("depth", depth);
         results.put("query_success", true);
 
         return results;
     }
+
+    public static void main(String[] args) {
+        Map<String, Double> params = new HashMap<>();
+        params.put("ullon", -122.292887961);
+        params.put("ullat", 37.883626573);
+        params.put("lrlon", -122.275684767);
+        params.put("lrlat", 37.856014984);
+        params.put("w", 557.0);
+        params.put("h", 894.0);
+        Rasterer rasterer = new Rasterer();
+        Map<String, Object> res = rasterer.getMapRaster(params);
+        for (Map.Entry<String, Object> entry : res.entrySet()) {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        }
+
+    }
+
 }
